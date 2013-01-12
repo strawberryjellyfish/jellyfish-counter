@@ -34,19 +34,21 @@ You can see a counter in action at http://sharkaroo.net/map
 Using an animated counter adds visual and narrative impact to an otherwise 
 static value.
 
-This plugin uses a javascript odometer class written by Gavin Brock
-http://www.brock-family.org/gavin/software/web/
+This plugin uses a modified version of a javascript odometer class written by 
+Gavin Brock http://www.brock-family.org/gavin/software/web/
 
 
 ==Usage==
 
-Add a counter widget to your sidebar and configure the settings as desired.
+Add a counter widget to your sidebar and adjust the settings to suit your 
+requirements. If you specify different start and end values the counter will
+count upwards when the page loads until it reaches the ending value.
 
-If you'd like to add additional styling to the counter, a border for example,
-just add the relevant css to your theme stylesheet. Each counter is displayed 
-in a div with the id of odometer-# where # is the id of the widget, additionally 
-the counters have the "odometer" class. Size, font, and appearance of the counter 
-itself is controlled via the widget settings.
+If you just want a static counter make the start and end the same value or make
+the end value lower than the starting value.
+
+You can configure the digit height, width and font as well as animation
+speed and "bustedness" (misalignment of the digits). 
 
 
 
