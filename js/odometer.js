@@ -35,6 +35,7 @@ function Odometer (parentDiv,opts) {
     var style = {
         digits:        "position:absolute; height:"+this.digitHeight+"px; width:"+(this.digitWidth-(2*this.digitPadding))+"px; "+
                        "padding:"+this.digitPadding+"px; font-size:"+(this.digitHeight-(2*this.digitPadding))+"px; "+
+                        "line-height:"+this.digitHeight+"px; "+
                        "background:black; color:white; text-align:center; "+this.fontStyle,
         columns:       "position:relative; float:left; overflow:hidden;"+
                        "height:"+this.digitHeight+"px; width:"+this.digitWidth+"px;",
@@ -96,7 +97,7 @@ function Odometer (parentDiv,opts) {
 
     var odometerDiv = document.createElement("div")
     odometerDiv.setAttribute("id","odometer");
-    odometerDiv.style.cssText="text-align: left";
+    odometerDiv.style.cssText="text-align: left; width:"+(this.digitWidth*this.digits)+"px; height:"+this.digitHeight+"px";
     parentDiv.appendChild(odometerDiv);
 
     var digitInfo = new Array();
