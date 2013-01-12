@@ -1,7 +1,7 @@
 <?php 
 /*
   Plugin Name: Jellyfish Counter Widget
-  Plugin URI: http://strawberryjellyfish.com/jellyfish-counter-widget/
+  Plugin URI: http://strawberryjellyfish.com/wordpress-plugin-jellyfish-counter-widget/
   Description: Creates a widget with an odometer style counter that displays either a static number or animates up to a predefined value.
   Author: Rob Miller
   Version: 0.3

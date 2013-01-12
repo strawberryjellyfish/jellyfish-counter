@@ -15,9 +15,9 @@ a static value or animate up to a set predefined value. Great for tracking total
 
 == Description ==
 
-This plugin for WordPress adds a widget that displays a static or animated odometer
-style counter that can display a set value or can animate between a starting and
-ending value.
+This plugin for WordPress does not count jellyfish, it adds a widget that 
+displays a static or animated odometer style counter that can display a set 
+value or can animate between a starting and ending value.
 
 A great visual effect for travel blogs or any website that wants to display a
 running total of anything. 
