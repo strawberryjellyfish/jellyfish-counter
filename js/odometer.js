@@ -32,6 +32,7 @@ function Odometer (parentDiv,opts) {
 
     for (var key in opts) { this[key] = opts[key]; }
 
+    // added line-height here to fix strangeness caused by inhereted css styles
     var style = {
         digits:        "position:absolute; height:"+this.digitHeight+"px; width:"+(this.digitWidth-(2*this.digitPadding))+"px; "+
                        "padding:"+this.digitPadding+"px; font-size:"+(this.digitHeight-(2*this.digitPadding))+"px; "+
@@ -97,6 +98,8 @@ function Odometer (parentDiv,opts) {
 
     var odometerDiv = document.createElement("div")
     odometerDiv.setAttribute("id","odometer");
+    // set container height and width based on the digit size so we can style
+    // the container for borders etc.
     odometerDiv.style.cssText="text-align: left; width:"+(this.digitWidth*this.digits)+"px; height:"+this.digitHeight+"px";
     parentDiv.appendChild(odometerDiv);
 
@@ -137,4 +140,3 @@ function Odometer (parentDiv,opts) {
 
     if (this.value >= 0) this.set(this.value);
 }
-

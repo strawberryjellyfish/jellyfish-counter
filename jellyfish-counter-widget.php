@@ -4,7 +4,7 @@
   Plugin URI: http://strawberryjellyfish.com/wordpress-plugin-jellyfish-counter-widget/
   Description: Creates a widget with an odometer style counter that displays either a static number or animates up to a predefined value.
   Author: Rob Miller
-  Version: 0.3
+  Version: 0.6
   Author URI: http://strawberryjellyfish.com/
  */
 ?>
@@ -185,7 +185,7 @@ class Jellyfish_Counter_Widget extends WP_Widget {
                 <p>
                     <label for="<?php echo 
 						$this->get_field_id( 'digit_padding' ); ?>">
-			<?php echo 'Digit Padding:'; ?>			
+			<?php echo 'Padding:'; ?>			
 			<input type="text" 
 					id="<?php echo $this->get_field_id( 'digit_padding' ); ?>"
 					name="<?php echo $this->get_field_name( 'digit_padding' ); ?>"
@@ -195,7 +195,7 @@ class Jellyfish_Counter_Widget extends WP_Widget {
                 <p>
                     <label for="<?php echo 
 						$this->get_field_id( 'digit_bustedness' ); ?>">
-			<?php echo 'Digit Bustedness:'; ?>			
+			<?php echo 'Bustedness:'; ?>			
 			<input type="text" 
 					id="<?php echo $this->get_field_id( 'digit_bustedness' ); ?>"
 					name="<?php echo $this->get_field_name( 'digit_bustedness' ); ?>"
@@ -345,11 +345,9 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 			}
                         
                         if ( counterEndValue != counterStartValue) {
-                            // animate counter 
                             myOdometer.set(counterStartValue);
                             updateOdometer();
                         } else {
-                            // just set to a static value
                             myOdometer.set(counterStartValue);
                         }
                     }

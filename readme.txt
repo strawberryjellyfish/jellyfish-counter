@@ -10,14 +10,13 @@ Stable tag: 0.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Creates a widget containing an odometer style counter that can display either
-a static value or animate up to a set predefined value. Great for tracking totals etc.
+An odometer style counter widget to display either a static value or animates to a set total. Great for tracking totals, not for counting jellyfish.
 
 == Description ==
 
-This plugin for WordPress does not count jellyfish, it adds a widget that 
-displays a static or animated odometer style counter that can display a set 
-value or can animate between a starting and ending value.
+This plugin adds a widget to your WordPress web site that displays a static or 
+animated odometer style counter that can display a set value or can animate 
+between a starting and ending value.
 
 A great visual effect for travel blogs or any website that wants to display a
 running total of anything. 
@@ -48,7 +47,11 @@ If you just want a static counter make the start and end the same value or make
 the end value lower than the starting value.
 
 You can configure the digit height, width and font as well as animation
-speed and "bustedness" (misalignment of the digits). 
+speed and "bustedness" (misalignment of the digits).
+
+In the "Digit Style" setting you can specify a font or font style, this must be
+valid css values as it it added to the digits css. Note you cannot adjust the size
+of the font here, that is automatically set from the height/width and padding settings. 
 
 
 
@@ -64,11 +67,9 @@ has it's own settings.
 None yet
 
 == Changelog ==
-=0.3=
+=0.6=
 * initial release
 
 == Upgrade Notice ==
 
 == Screenshots ==
-
-
