@@ -34,7 +34,7 @@ Using an animated counter adds visual and narrative impact to an otherwise
 static value.
 
 This plugin uses a modified version of a javascript odometer class written by 
-Gavin Brock http://www.brock-family.org/gavin/software/web/
+Gavin Brock http://gavcode.wordpress.com/2008/04/07/cssjavascript-animated-odometer/
 
 
 ==Usage==
