@@ -33,6 +33,9 @@ You can see a counter in action at http://sharkaroo.net/map
 Using an animated counter adds visual and narrative impact to an otherwise 
 static value.
 
+Another demo and further information can be found at the plugin website
+http://strawberryjellyfish.com/wordpress-plugin-jellyfish-counter-widget/
+
 This plugin uses a modified version of a javascript odometer class written by 
 Gavin Brock http://gavcode.wordpress.com/2008/04/07/cssjavascript-animated-odometer/
 
