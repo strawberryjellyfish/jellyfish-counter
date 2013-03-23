@@ -4,7 +4,7 @@
   Plugin URI: http://strawberryjellyfish.com/wordpress-plugin-jellyfish-counter-widget/
   Description: Creates a widget with an odometer style counter that displays either a static number or animates up to a predefined value.
   Author: Rob Miller
-  Version: 0.6
+  Version: 0.7
   Author URI: http://strawberryjellyfish.com/
  */
 ?>
@@ -80,6 +80,18 @@ class Jellyfish_Counter_Widget extends WP_Widget {
        $animate_speed = ( !empty( $instance['animate_speed'] ) ? 
 					esc_attr( $instance['animate_speed'] ) :
 							'50' );
+                
+       $persist = ( !empty( $instance['persist'] ) ? 
+					esc_attr( $instance['persist'] ) :
+							'false' );
+                
+       $persist_interval = ( !empty( $instance['persist_interval'] ) ? 
+					esc_attr( $instance['persist_interval'] ) :
+							'1' );
+                
+       $init_timestamp = ( !empty( $instance['init_timestamp'] ) ? 
+					esc_attr( $instance['init_timestamp'] ) :
+							time() );
                 
 	?>
 	<p>
@@ -160,6 +172,31 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 					id="<?php echo $this->get_field_id( 'animate_speed' ); ?>"
 					name="<?php echo $this->get_field_name( 'animate_speed' ); ?>"
 					value="<?php echo $animate_speed; ?>" />			
+                    </label>
+		</p> 
+                <p>
+                    <label for="<?php echo 
+						$this->get_field_id( 'persist' ); ?>">
+			<?php echo 'Continuous Counter'; ?>			
+			<select id="<?php echo $this->get_field_id( 'persist' ); ?>"
+					name="<?php echo $this->get_field_name( 'persist' ); ?>">
+				<option value="true"
+					<?php selected( $persist, 'true' ); ?>>
+					Yes</option>
+				<option value="false"
+					<?php selected( $persist, 'false' ); ?>>
+					No</option>
+			</select>
+                    </label>
+		</p>
+               <p>
+                    <label for="<?php echo 
+						$this->get_field_id( 'persist_interval' ); ?>">
+			<?php echo 'Continuous Interval (seconds):'; ?>			
+			<input type="text" 
+					id="<?php echo $this->get_field_id( 'persist_interval' ); ?>"
+					name="<?php echo $this->get_field_name( 'persist_interval' ); ?>"
+					value="<?php echo $persist_interval; ?>" />			
                     </label>
 		</p> 
 		<p>
@@ -268,8 +305,9 @@ class Jellyfish_Counter_Widget extends WP_Widget {
                     if ($instance['animate_speed'] >100) {
                         $instance['animate_speed']=100;
                     }
-                } else {
-                    $instance['end_value'] = $instance['end_value'];
+                }
+                if ( is_numeric ( $new_instance['persist_interval'] ) ) {
+                    $instance['persist_interval'] = intval( $new_instance['persist_interval'] );
                 }
                 // string values
 		$instance['digit_style'] =
@@ -281,8 +319,12 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 		$instance['show_title'] =
 			strip_tags( $new_instance['show_title'] );
 
+                $instance['persist'] =
+			strip_tags( $new_instance['persist'] );
+
                 $instance['display_tenths'] =
 			strip_tags( $new_instance['display_tenths'] );
+                $instance['init_timestamp'] = time();
 
 		return $instance;
     }
@@ -294,6 +336,8 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 
         // Extract members of args array as individual variables
         extract( $args );
+        
+     
         $widget_title = $instance['widget_title'];
         $show_title = $instance['show_title'];
         $number_of_digits = $instance['number_of_digits'];
@@ -305,7 +349,35 @@ class Jellyfish_Counter_Widget extends WP_Widget {
         $digit_width = $instance['digit_width'];
         $digit_padding = $instance['digit_padding'];
         $digit_bustedness = $instance['digit_bustedness'];
-        $digit_style = $instance['digit_style'];
+        $digit_style = $instance['digit_style'];        
+
+       //these were added at v0.7 and may not have defaults for existing widgets
+       //so we'll add some defaults here to avoid any undefined indexes
+        
+       $persist = ( !empty( $instance['persist'] ) ? 
+					esc_attr( $instance['persist'] ) :
+							'false' );
+                
+       $persist_interval = ( !empty( $instance['persist_interval'] ) ? 
+					esc_attr( $instance['persist_interval'] ) :
+							'1' );
+                
+       $init_timestamp = ( !empty( $instance['init_timestamp'] ) ? 
+					esc_attr( $instance['init_timestamp'] ) :
+							time() );
+       
+        
+        if ($persist =='true') {
+            $start_value = (time()-$init_timestamp)/$persist_interval;
+            if ($start_value > $end_value) {
+                $start_value = $end_value;            
+            }
+            //$animate_speed = 100;
+            $display_tenths = 0;
+            
+        } else {
+            $persist_interval = 1;
+        }
         // Display widget title
         echo $before_widget;
         if ($show_title == 'true') {
@@ -319,10 +391,11 @@ class Jellyfish_Counter_Widget extends WP_Widget {
         // output javascript
         echo "<script type='text/javascript'>
                 jQuery(document).ready(function() {
-                        var waitTime = 100 - $animate_speed;
+                        var waitTime = (100 - $animate_speed);
                         var counterStartValue = $start_value;
                         var counterEndValue = $end_value;
                         var counterNow = $start_value;
+                        var wholeNumber = 0;
                         var div = document.getElementById('odometer-".$args['widget_id'] ."');
                         var myOdometer = new Odometer(div, {
                                        digits: $number_of_digits, 
@@ -334,8 +407,16 @@ class Jellyfish_Counter_Widget extends WP_Widget {
                                        bustedness: $digit_bustedness
                                        });
                         
+
                          function updateOdometer() {
 				counterNow=counterNow+0.005;
+				wholeNumber=wholeNumber+0.005;
+                                if (($persist == 'true') && (wholeNumber >= 1)) {
+                                    wholeNumber = 0;
+                                    waitTime = $persist_interval * 1000;
+                                } else {
+                                    waitTime = (100 - $animate_speed);
+                                }
                                 if (counterNow < counterEndValue) {
                                     myOdometer.set(counterNow);
                                     window.setTimeout(function() {
