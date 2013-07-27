@@ -97,7 +97,7 @@ function Odometer (parentDiv,opts) {
 
 
     var odometerDiv = document.createElement("div")
-    odometerDiv.setAttribute("id","odometer");
+    //odometerDiv.setAttribute("id","odometer");
     // set container height and width based on the digit size so we can style
     // the container for borders etc.
     odometerDiv.style.cssText="text-align: left; width:"+(this.digitWidth*this.digits)+"px; height:"+this.digitHeight+"px";
