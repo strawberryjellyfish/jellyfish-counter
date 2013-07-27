@@ -90,7 +90,7 @@ has it's own settings.
 =0.6=
 * initial release
 
-=0.95=
+=0.8=
 * by request, added  a non resetting continuous counter feature that can increment
 every set number of seconds until it reaches its goal
 
