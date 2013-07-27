@@ -4,7 +4,7 @@
   Plugin URI: http://strawberryjellyfish.com/wordpress-plugin-jellyfish-counter-widget/
   Description: Creates a widget with an odometer style counter that displays either a static number or animates up to a predefined value.
   Author: Rob Miller
-  Version: 0.95
+  Version: 0.8
   Author URI: http://strawberryjellyfish.com/
  */
 
@@ -62,11 +62,8 @@ class Jellyfish_Counter_Widget extends WP_Widget {
         $init_timestamp = (!empty($instance['init_timestamp']) ? esc_attr($instance['init_timestamp']) : time() );
         ?>
         <p>
-            <label for="<?php
-        echo
-        $this->get_field_id('widget_title');
-        ?>">
-        <?php echo 'Title:'; ?>			
+            <label for="<?php echo $this->get_field_id('widget_title'); ?>">
+                <?php echo 'Title:'; ?>			
                 <input type="text" 
                        id="<?php echo $this->get_field_id('widget_title'); ?>"
                        name="<?php echo $this->get_field_name('widget_title'); ?>"
@@ -74,28 +71,22 @@ class Jellyfish_Counter_Widget extends WP_Widget {
             </label>
         </p>
         <p>
-            <label for="<?php
-        echo
-        $this->get_field_id('show_title');
-        ?>">
-        <?php echo 'Show Title'; ?>			
+            <label for="<?php echo $this->get_field_id('show_title'); ?>">
+                <?php echo 'Show Title'; ?>			
                 <select id="<?php echo $this->get_field_id('show_title'); ?>"
                         name="<?php echo $this->get_field_name('show_title'); ?>">
                     <option value="true"
                             <?php selected($show_title, 'true'); ?>>
                         Yes</option>
                     <option value="false"
-        <?php selected($show_title, 'false'); ?>>
+                            <?php selected($show_title, 'false'); ?>>
                         No</option>
                 </select>
             </label>
         </p>
         <p>
-            <label for="<?php
-        echo
-        $this->get_field_id('start_value');
-        ?>">
-        <?php echo 'Start Value:'; ?>			
+            <label for="<?php echo $this->get_field_id('start_value'); ?>">
+                <?php echo 'Start Value:'; ?>			
                 <input type="text" 
                        id="<?php echo $this->get_field_id('start_value'); ?>"
                        name="<?php echo $this->get_field_name('start_value'); ?>"
@@ -103,40 +94,31 @@ class Jellyfish_Counter_Widget extends WP_Widget {
             </label>
         </p>
         <p>
-            <label for="<?php
-        echo
-        $this->get_field_id('end_value');
-        ?>">
-        <?php echo 'End Value:'; ?>			
+            <label for="<?php echo $this->get_field_id('end_value'); ?>">
+                <?php echo 'End Value:'; ?>			
                 <input type="text" 
                        id="<?php echo $this->get_field_id('end_value'); ?>"
                        name="<?php echo $this->get_field_name('end_value'); ?>"
                        value="<?php echo $end_value; ?>" />			
             </label>
         </p> 
-         <p>
-            <label for="<?php
-               echo
-               $this->get_field_id('persist');
-        ?>">
-        <?php echo 'Continuous Counter'; ?>			
+        <p>
+            <label for="<?php echo $this->get_field_id('persist'); ?>">
+                <?php echo 'Continuous Counter'; ?>			
                 <select id="<?php echo $this->get_field_id('persist'); ?>"
                         name="<?php echo $this->get_field_name('persist'); ?>">
                     <option value="true"
-        <?php selected($persist, 'true'); ?>>
+                            <?php selected($persist, 'true'); ?>>
                         Yes</option>
                     <option value="false"
-                   <?php selected($persist, 'false'); ?>>
+                            <?php selected($persist, 'false'); ?>>
                         No</option>
                 </select>
             </label>
         </p>
         <p>
-            <label for="<?php
-           echo
-           $this->get_field_id('persist_interval');
-           ?>">
-            <?php echo 'Continuous Interval (seconds):'; ?>			
+            <label for="<?php echo $this->get_field_id('persist_interval'); ?>">
+                <?php echo 'Continuous Interval (seconds):'; ?>			
                 <input type="text" 
                        id="<?php echo $this->get_field_id('persist_interval'); ?>"
                        name="<?php echo $this->get_field_name('persist_interval'); ?>"
@@ -144,11 +126,8 @@ class Jellyfish_Counter_Widget extends WP_Widget {
             </label>
         </p> 
         <p>
-            <label for="<?php
-        echo
-        $this->get_field_id('number_of_digits');
-        ?>">
-        <?php echo 'Number of Digits:'; ?>			
+            <label for="<?php echo $this->get_field_id('number_of_digits'); ?>">
+                <?php echo 'Number of Digits:'; ?>			
                 <input type="text" 
                        id="<?php echo $this->get_field_id('number_of_digits'); ?>"
                        name="<?php echo $this->get_field_name('number_of_digits'); ?>"
@@ -156,28 +135,22 @@ class Jellyfish_Counter_Widget extends WP_Widget {
             </label>
         </p> 
         <p>
-            <label for="<?php
-        echo
-        $this->get_field_id('display_tenths');
-        ?>">
-                            <?php echo 'Display Tenths'; ?>			
+            <label for="<?php echo $this->get_field_id('display_tenths'); ?>">
+                <?php echo 'Display Tenths'; ?>			
                 <select id="<?php echo $this->get_field_id('display_tenths'); ?>"
                         name="<?php echo $this->get_field_name('display_tenths'); ?>">
                     <option value="true"
-        <?php selected($display_tenths, 'true'); ?>>
+                            <?php selected($display_tenths, 'true'); ?>>
                         Yes</option>
                     <option value="false"
-        <?php selected($display_tenths, 'false'); ?>>
+                            <?php selected($display_tenths, 'false'); ?>>
                         No</option>
                 </select>
             </label>
         </p>
-       <p>
-            <label for="<?php
-           echo
-           $this->get_field_id('animate_speed');
-           ?>">
-        <?php echo 'Animation Speed (1-100):'; ?>			
+        <p>
+            <label for="<?php echo $this->get_field_id('animate_speed'); ?>">
+                <?php echo 'Animation Speed (1-100):'; ?>			
                 <input type="text" 
                        id="<?php echo $this->get_field_id('animate_speed'); ?>"
                        name="<?php echo $this->get_field_name('animate_speed'); ?>"
@@ -185,11 +158,8 @@ class Jellyfish_Counter_Widget extends WP_Widget {
             </label>
         </p> 
         <p>
-            <label for="<?php
-               echo
-               $this->get_field_id('digit_height');
-            ?>">
-                   <?php echo 'Digit Height:'; ?>			
+            <label for="<?php echo $this->get_field_id('digit_height'); ?>">
+                <?php echo 'Digit Height:'; ?>			
                 <input type="text" 
                        id="<?php echo $this->get_field_id('digit_height'); ?>"
                        name="<?php echo $this->get_field_name('digit_height'); ?>"
@@ -197,11 +167,8 @@ class Jellyfish_Counter_Widget extends WP_Widget {
             </label>
         </p>		
         <p>
-            <label for="<?php
-           echo
-           $this->get_field_id('digit_width');
-                   ?>">
-                       <?php echo 'Digit Width:'; ?>			
+            <label for="<?php echo $this->get_field_id('digit_width'); ?>">
+                <?php echo 'Digit Width:'; ?>			
                 <input type="text" 
                        id="<?php echo $this->get_field_id('digit_width'); ?>"
                        name="<?php echo $this->get_field_name('digit_width'); ?>"
@@ -209,11 +176,8 @@ class Jellyfish_Counter_Widget extends WP_Widget {
             </label>
         </p>		
         <p>
-            <label for="<?php
-               echo
-               $this->get_field_id('digit_padding');
-                       ?>">
-        <?php echo 'Padding:'; ?>			
+            <label for="<?php echo $this->get_field_id('digit_padding'); ?>">
+                <?php echo 'Padding:'; ?>			
                 <input type="text" 
                        id="<?php echo $this->get_field_id('digit_padding'); ?>"
                        name="<?php echo $this->get_field_name('digit_padding'); ?>"
@@ -221,11 +185,8 @@ class Jellyfish_Counter_Widget extends WP_Widget {
             </label>
         </p>		
         <p>
-            <label for="<?php
-        echo
-        $this->get_field_id('digit_bustedness');
-        ?>">
-        <?php echo 'Bustedness:'; ?>			
+            <label for="<?php echo $this->get_field_id('digit_bustedness'); ?>">
+                <?php echo 'Bustedness:'; ?>			
                 <input type="text" 
                        id="<?php echo $this->get_field_id('digit_bustedness'); ?>"
                        name="<?php echo $this->get_field_name('digit_bustedness'); ?>"
@@ -233,11 +194,8 @@ class Jellyfish_Counter_Widget extends WP_Widget {
             </label>
         </p>		
         <p>
-            <label for="<?php
-        echo
-        $this->get_field_id('digit_style');
-        ?>">
-        <?php echo 'Digit Style:'; ?>			
+            <label for="<?php echo $this->get_field_id('digit_style'); ?>">
+                <?php echo 'Digit Style:'; ?>			
                 <input type="text" 
                        id="<?php echo $this->get_field_id('digit_style'); ?>"
                        name="<?php echo $this->get_field_name('digit_style'); ?>"
