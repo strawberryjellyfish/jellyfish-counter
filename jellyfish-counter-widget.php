@@ -4,7 +4,7 @@
   Plugin URI: http://strawberryjellyfish.com/wordpress-plugin-jellyfish-counter-widget/
   Description: Creates a widget with an odometer style counter that displays either a static number or animates up to a predefined value.
   Author: Rob Miller
-  Version: 0.8
+  Version: 1.0
   Author URI: http://strawberryjellyfish.com/
  */
 
@@ -26,10 +26,16 @@
  */
 ?>
 <?php
+
+add_action('init', 'jellyfish_cw_action_init');
 add_action('widgets_init', 'jellyfish_cw_create_widgets');
 
 function jellyfish_cw_create_widgets() {
     register_widget('Jellyfish_Counter_Widget');
+}
+
+function jellyfish_cw_action_init() {
+    load_plugin_textdomain('jellyfish_cw', false, dirname(plugin_basename(__FILE__)));
 }
 
 // Counter Widget class
@@ -43,257 +49,351 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 
     // options form
     function form($instance) {
-        // Retrieve previous values from instance
-        // or set default values if not present
-        $show_title = (!empty($instance['show_title']) ? $instance['show_title'] : 'true' );
-        $widget_title = (!empty($instance['widget_title']) ? esc_attr($instance['widget_title']) : 'Counter' );
-        $display_tenths = (!empty($instance['display_tenths']) ? $instance['display_tenths'] : 'true' );
-        $number_of_digits = (!empty($instance['number_of_digits']) ? esc_attr($instance['number_of_digits']) : '6' );
-        $digit_height = (!empty($instance['digit_height']) ? esc_attr($instance['digit_height']) : '40' );
-        $digit_width = (!empty($instance['digit_width']) ? esc_attr($instance['digit_width']) : '30' );
-        $digit_padding = (isset($instance['digit_padding']) ? esc_attr($instance['digit_padding']) : '0' );
-        $digit_bustedness = (isset($instance['digit_bustedness']) ? esc_attr($instance['digit_bustedness']) : '2' );
-        $digit_style = (!empty($instance['digit_style']) ? esc_attr($instance['digit_style']) : 'font-family: Courier New, Courier, monospace; font-weight: 900;' );
-        $start_value = (!empty($instance['start_value']) ? esc_attr($instance['start_value']) : '10' );
-        $end_value = (isset($instance['end_value']) ? esc_attr($instance['end_value']) : '100' );
-        $animate_speed = (!empty($instance['animate_speed']) ? esc_attr($instance['animate_speed']) : '50' );
-        $persist = (!empty($instance['persist']) ? esc_attr($instance['persist']) : 'false' );
-        $count_down = (!empty($instance['count_down']) ? esc_attr($instance['count_down']) : 'false' );
-        $persist_interval = (!empty($instance['persist_interval']) ? esc_attr($instance['persist_interval']) : '1' );
-        $init_timestamp = (!empty($instance['init_timestamp']) ? esc_attr($instance['init_timestamp']) : time() );
+        // migrate obsolete settings
+        if (!empty($instance['count_down'])) {
+            $instance = migrate_settings($instance);
+        }
+        // Retrieve previous values from instance or set default values if new
+        $disable_title = $instance['disable_title'];
+        $disable_depth = $instance['disable_depth'];
+        $disable_tenths = $instance['disable_tenths'];
+        $persist = $instance['persist'];
+        $init_timestamp = $instance['init_timestamp'];
+
+        $start_value = (is_numeric($instance['start_value']) ? $instance['start_value'] : 0 );
+        $end_value = (is_numeric($instance['end_value']) ? $instance['end_value'] : 100 );
+        $animate_speed = (is_numeric($instance['animate_speed']) ? $instance['animate_speed'] : 50 );
+        $direction = (!empty($instance['direction']) ? $instance['direction'] : 'up' );
+        $persist_interval = (is_numeric($instance['persist_interval']) ? $instance['persist_interval'] : 1 );
+        $number_of_digits = (is_numeric($instance['number_of_digits']) ? $instance['number_of_digits'] : 5 );
+        $digit_height = (is_numeric($instance['digit_height']) ? $instance['digit_height'] : 40 );
+        $digit_width = (is_numeric($instance['digit_width']) ? $instance['digit_width'] : 30 );
+        $digit_padding = (is_numeric($instance['digit_padding']) ? $instance['digit_padding'] : 0 );
+        $digit_bustedness = (is_numeric($instance['digit_bustedness']) ? $instance['digit_bustedness'] : 2 );
+
+        $digit_style = (!empty($instance['digit_style']) ? $instance['digit_style'] : 'font-family: Courier New, Courier, monospace; font-weight: 900;' );
+        $widget_title = (!empty($instance['widget_title']) ? $instance['widget_title'] : 'Counter' );
+        $before_text = $instance['before_text'];
+        $after_text = $instance['after_text'];
+
+        // get the current count of an active continuous counter
+        if (($persist == 'on') && !empty($init_timestamp)) {
+            if ( $direction == 'down') {
+                $current_value = $start_value - round((time() - $init_timestamp) / $persist_interval);
+                if ($current_value < $end_value) {
+                    $current_value = $end_value;
+                }
+            } elseif ( $direction == 'up') {
+                $current_value = $start_value + round((time() - $init_timestamp) / $persist_interval);
+                if ($current_value > $end_value) {
+                    $current_value = $end_value;
+                }
+            }
+        }
+
         ?>
         <p>
-            <label for="<?php echo $this->get_field_id('widget_title'); ?>">
-                <?php echo 'Title:'; ?>
-                <input type="text"
-                       id="<?php echo $this->get_field_id('widget_title'); ?>"
-                       name="<?php echo $this->get_field_name('widget_title'); ?>"
-                       value="<?php echo $widget_title; ?>" />
-            </label>
-        </p>
-        <p>
-            <label for="<?php echo $this->get_field_id('show_title'); ?>">
-                <?php echo 'Show Title'; ?>
-                <select id="<?php echo $this->get_field_id('show_title'); ?>"
-                        name="<?php echo $this->get_field_name('show_title'); ?>">
-                    <option value="true"
-                            <?php selected($show_title, 'true'); ?>>
-                        Yes</option>
-                    <option value="false"
-                            <?php selected($show_title, 'false'); ?>>
-                        No</option>
-                </select>
-            </label>
-        </p>
-        <p>
             <label for="<?php echo $this->get_field_id('start_value'); ?>">
-                <?php echo 'Start Value:'; ?>
+                <?php echo _e('Start Value:', 'jellyfish_cw'); ?>
                 <input type="text"
                        id="<?php echo $this->get_field_id('start_value'); ?>"
                        name="<?php echo $this->get_field_name('start_value'); ?>"
-                       value="<?php echo $start_value; ?>" />
+                       value="<?php echo $start_value; ?>"
+                       class="widefat"
+                       />
             </label>
+        <?php if (($persist == 'on') && (isset($current_value))) { ?>
+            <span class="description">
+                <?php _e('This counter is active, the current count is', 'jellyfish_cw'); ?> <?php echo $current_value; ?>.
+                <?php _e('Changing the start value will restart the counter.', 'jellyfish_cw'); ?>
+            </span>
+        <?php } ?>
         </p>
         <p>
             <label for="<?php echo $this->get_field_id('end_value'); ?>">
-                <?php echo 'End Value:'; ?>
+                <?php _e('End Value:', 'jellyfish_cw'); ?>
                 <input type="text"
                        id="<?php echo $this->get_field_id('end_value'); ?>"
                        name="<?php echo $this->get_field_name('end_value'); ?>"
-                       value="<?php echo $end_value; ?>" />
+                       value="<?php echo $end_value; ?>"
+                       class="widefat"
+                       />
             </label>
         </p>
         <p>
-            <label for="<?php echo $this->get_field_id('count_down'); ?>">
-                <?php echo 'Count Direction'; ?>
-                <select id="<?php echo $this->get_field_id('count_down'); ?>"
-                        name="<?php echo $this->get_field_name('count_down'); ?>">
-                    <option value="true"
-                            <?php selected($count_down, 'true'); ?>>
-                        Down</option>
-                    <option value="false"
-                            <?php selected($count_down, 'false'); ?>>
-                        Up</option>
+            <label for="<?php echo $this->get_field_id('direction'); ?>">
+                <?php _e('Counter Type:', 'jellyfish_cw'); ?>
+                <select id="<?php echo $this->get_field_id('direction'); ?>"
+                        name="<?php echo $this->get_field_name('direction'); ?>">
+                    <option value="up"
+                            <?php selected($direction, 'up'); ?>>
+                        <?php _e('Count Up', 'jellyfish_cw'); ?></option>
+                    <option value="static"
+                            <?php selected($direction, 'static'); ?>>
+                        <?php _e('Static', 'jellyfish_cw'); ?></option>
+                    <option value="down"
+                            <?php selected($direction, 'down'); ?>>
+                        <?php _e('Count Down', 'jellyfish_cw'); ?></option>
                 </select>
             </label>
         </p>
         <p>
+            <input class="checkbox" type="checkbox" <?php checked( $persist, 'on'); ?>
+                id="<?php echo $this->get_field_id( 'persist' ); ?>"
+                name="<?php echo $this->get_field_name( 'persist' ); ?>" />
+
             <label for="<?php echo $this->get_field_id('persist'); ?>">
-                <?php echo 'Continuous Counter'; ?>
-                <select id="<?php echo $this->get_field_id('persist'); ?>"
-                        name="<?php echo $this->get_field_name('persist'); ?>">
-                    <option value="true"
-                            <?php selected($persist, 'true'); ?>>
-                        Yes</option>
-                    <option value="false"
-                            <?php selected($persist, 'false'); ?>>
-                        No</option>
-                </select>
+                <?php _e('Continuous Counter', 'jellyfish_cw'); ?>
             </label>
+            <br/>
+            <span class="description">
+                <?php _e('Counts continuously in the background, starts as soon as this widget is saved.', 'jellyfish_cw'); ?>
+            </span>
         </p>
         <p>
             <label for="<?php echo $this->get_field_id('persist_interval'); ?>">
-                <?php echo 'Continuous Interval (seconds):'; ?>
+                <?php _e('Continuous Interval:', 'jellyfish_cw'); ?>
                 <input type="text"
                        id="<?php echo $this->get_field_id('persist_interval'); ?>"
                        name="<?php echo $this->get_field_name('persist_interval'); ?>"
-                       value="<?php echo $persist_interval; ?>" />
+                       value="<?php echo $persist_interval; ?>"
+                       size=6
+                       />
+                 <?php _e('seconds', 'jellyfish_cw'); ?>
             </label>
+            <br/>
+            <span class="description">
+                <?php _e('How often a continuous style counter updates', 'jellyfish_cw'); ?>
+            </span>
+        </p>
+        <hr>
+        <h3 class="title"><?php _e('Appearance', 'jellyfish_cw'); ?></h3>
+        <p>
+            <label for="<?php echo $this->get_field_id('widget_title'); ?>">
+                <?php _e('Widget Title:', 'jellyfish_cw'); ?>
+                <input type="text"
+                       id="<?php echo $this->get_field_id('widget_title'); ?>"
+                       name="<?php echo $this->get_field_name('widget_title'); ?>"
+                       value="<?php echo $widget_title; ?>"
+                       class="widefat"
+                />
+            </label>
+        </p>
+        <p>
+            <input class="checkbox" type="checkbox" <?php checked( $disable_title, 'on'); ?>
+                id="<?php echo $this->get_field_id( 'disable_title' ); ?>"
+                name="<?php echo $this->get_field_name( 'disable_title' ); ?>" />
+            <label for="<?php echo $this->get_field_id('disable_title'); ?>">
+                <?php _e('Hide Title', 'jellyfish_cw'); ?>
+            </label>
+        </p>
+        <p>
+            <label for="<?php echo $this->get_field_id('before_text'); ?>">
+                <?php _e('Text to display before counter:', 'jellyfish_cw'); ?></label>
+            <textarea id="<?php echo $this->get_field_id('before_text'); ?>"
+                class="widefat" name="<?php echo $this->get_field_name('before_text'); ?>">
+                <?php echo $before_text; ?>
+            </textarea>
+        </p>
+        <p>
+            <label for="<?php echo $this->get_field_id('after_text'); ?>">
+                <?php _e('Text to display after counter:', 'jellyfish_cw'); ?></label>
+            <textarea id="<?php echo $this->get_field_id('after_text'); ?>"
+                 class="widefat" name="<?php echo $this->get_field_name('after_text'); ?>">
+                <?php echo $after_text; ?>
+            </textarea>
         </p>
         <p>
             <label for="<?php echo $this->get_field_id('number_of_digits'); ?>">
-                <?php echo 'Number of Digits:'; ?>
+                <?php _e('Number of Digits:', 'jellyfish_cw'); ?>
                 <input type="text"
                        id="<?php echo $this->get_field_id('number_of_digits'); ?>"
                        name="<?php echo $this->get_field_name('number_of_digits'); ?>"
-                       value="<?php echo $number_of_digits; ?>" />
+                       value="<?php echo $number_of_digits; ?>"
+                       size=3
+                       />
             </label>
         </p>
         <p>
-            <label for="<?php echo $this->get_field_id('display_tenths'); ?>">
-                <?php echo 'Display Tenths'; ?>
-                <select id="<?php echo $this->get_field_id('display_tenths'); ?>"
-                        name="<?php echo $this->get_field_name('display_tenths'); ?>">
-                    <option value="true"
-                            <?php selected($display_tenths, 'true'); ?>>
-                        Yes</option>
-                    <option value="false"
-                            <?php selected($display_tenths, 'false'); ?>>
-                        No</option>
-                </select>
+            <input class="checkbox" type="checkbox" <?php checked( $disable_tenths, 'on'); ?>
+                id="<?php echo $this->get_field_id( 'disable_tenths' ); ?>"
+                name="<?php echo $this->get_field_name( 'disable_tenths' ); ?>" />
+            <label for="<?php echo $this->get_field_id('disable_tenths'); ?>">
+                <?php _e('Disable Tenths', 'jellyfish_cw'); ?>
             </label>
         </p>
         <p>
             <label for="<?php echo $this->get_field_id('animate_speed'); ?>">
-                <?php echo 'Animation Speed (1-100):'; ?>
+                <?php _e('Animation Speed:', 'jellyfish_cw'); ?>
                 <input type="text"
                        id="<?php echo $this->get_field_id('animate_speed'); ?>"
                        name="<?php echo $this->get_field_name('animate_speed'); ?>"
-                       value="<?php echo $animate_speed; ?>" />
+                       value="<?php echo $animate_speed; ?>"
+                       size=3
+                />
             </label>
+            <br/>
+            <span class="description">
+                <?php _e('A value (1-100). Not used for continuous style counters', 'jellyfish_cw'); ?>
+            </span>
         </p>
         <p>
             <label for="<?php echo $this->get_field_id('digit_height'); ?>">
-                <?php echo 'Digit Height:'; ?>
+                <?php _e('Digit Height:', 'jellyfish_cw'); ?>
                 <input type="text"
                        id="<?php echo $this->get_field_id('digit_height'); ?>"
                        name="<?php echo $this->get_field_name('digit_height'); ?>"
-                       value="<?php echo $digit_height; ?>" />
+                       value="<?php echo $digit_height; ?>"
+                       size=3
+                />
+                <?php echo ' px'; ?>
             </label>
         </p>
         <p>
             <label for="<?php echo $this->get_field_id('digit_width'); ?>">
-                <?php echo 'Digit Width:'; ?>
+                <?php _e('Digit Width:', 'jellyfish_cw'); ?>
                 <input type="text"
                        id="<?php echo $this->get_field_id('digit_width'); ?>"
                        name="<?php echo $this->get_field_name('digit_width'); ?>"
-                       value="<?php echo $digit_width; ?>" />
+                       value="<?php echo $digit_width; ?>"
+                       size=3
+                />
+                <?php echo ' px'; ?>
             </label>
         </p>
         <p>
             <label for="<?php echo $this->get_field_id('digit_padding'); ?>">
-                <?php echo 'Padding:'; ?>
+                <?php _e('Digit Padding:', 'jellyfish_cw'); ?>
                 <input type="text"
                        id="<?php echo $this->get_field_id('digit_padding'); ?>"
                        name="<?php echo $this->get_field_name('digit_padding'); ?>"
-                       value="<?php echo $digit_padding; ?>" />
+                       value="<?php echo $digit_padding; ?>"
+                       size=3
+                />
+                <?php echo ' px'; ?>
+            </label>
+        </p>
+        <p>
+            <input class="checkbox" type="checkbox" <?php checked( $disable_depth, 'on'); ?>
+                id="<?php echo $this->get_field_id( 'disable_depth' ); ?>"
+                name="<?php echo $this->get_field_name( 'disable_depth' ); ?>" />
+            <label for="<?php echo $this->get_field_id('disable_depth'); ?>">
+                <?php _e('Disable 3D effect', 'jellyfish_cw'); ?>
             </label>
         </p>
         <p>
             <label for="<?php echo $this->get_field_id('digit_bustedness'); ?>">
-                <?php echo 'Bustedness:'; ?>
+                <?php _e('Bustedness:', 'jellyfish_cw'); ?>
                 <input type="text"
                        id="<?php echo $this->get_field_id('digit_bustedness'); ?>"
                        name="<?php echo $this->get_field_name('digit_bustedness'); ?>"
-                       value="<?php echo $digit_bustedness; ?>" />
+                       value="<?php echo $digit_bustedness; ?>"
+                       size=3
+                />
             </label>
+            <br/>
+            <span class="description">Amount of digit misalignment</span>
         </p>
         <p>
             <label for="<?php echo $this->get_field_id('digit_style'); ?>">
-                <?php echo 'Digit Style:'; ?>
+                <?php _e('Digit Style:', 'jellyfish_cw'); ?>
                 <input type="text"
                        id="<?php echo $this->get_field_id('digit_style'); ?>"
                        name="<?php echo $this->get_field_name('digit_style'); ?>"
-                       value="<?php echo $digit_style; ?>" />
+                       value="<?php echo $digit_style; ?>"
+                       class="widefat"
+                />
             </label>
+            <br/>
+            <span class="description">
+                <?php _e('CSS entered here will alter the appearance of the digits', 'jellyfish_cw'); ?>
+            </span>
         </p>
         <?php
     }
 
     function update($new_instance, $old_instance) {
         $instance = $old_instance;
-        // validate inputs
-        // Only numeric values
+
+        // string values
+        $instance['digit_style'] = sanitize_text_field($new_instance['digit_style']);
+        $instance['widget_title'] = sanitize_text_field($new_instance['widget_title']);
+        $instance['before_text'] = sanitize_text_field($new_instance['before_text']);
+        $instance['after_text'] = sanitize_text_field($new_instance['after_text']);
+        $instance['direction'] = sanitize_text_field($new_instance['direction']);
+
+        // boolean values
+        $instance['disable_title'] = $new_instance['disable_title'];
+        $instance['persist'] = $new_instance['persist'];
+        $instance['disable_tenths'] = $new_instance['disable_tenths'];
+        $instance['disable_depth'] = $new_instance['disable_depth'];
+
+        // numeric values
         if (is_numeric($new_instance['number_of_digits'])) {
             $instance['number_of_digits'] = intval($new_instance['number_of_digits']);
-        } else {
-            $instance['number_of_digits'] = $instance['number_of_digits'];
         }
 
         if (is_numeric($new_instance['digit_height'])) {
             $instance['digit_height'] = intval($new_instance['digit_height']);
-        } else {
-            $instance['digit_height'] = $instance['digit_height'];
         }
 
         if (is_numeric($new_instance['digit_width'])) {
             $instance['digit_width'] = intval($new_instance['digit_width']);
-        } else {
-            $instance['digit_width'] = $instance['digit_width'];
         }
 
         if (is_numeric($new_instance['digit_padding'])) {
             $instance['digit_padding'] = intval($new_instance['digit_padding']);
-        } else {
-            $instance['digit_padding'] = $instance['digit_padding'];
         }
 
         if (is_numeric($new_instance['digit_bustedness'])) {
             $instance['digit_bustedness'] = intval($new_instance['digit_bustedness']);
-        } else {
-            $instance['digit_bustedness'] = $instance['digit_bustedness'];
-        }
-
-        if (is_numeric($new_instance['start_value'])) {
-            $instance['start_value'] = floatval($new_instance['start_value']);
-        } else {
-            $instance['start_value'] = $instance['start_value'];
         }
 
         if (is_numeric($new_instance['end_value'])) {
-            $instance['end_value'] = floatval($new_instance['end_value']);
-        } else {
-            $instance['end_value'] = $instance['end_value'];
+            $instance['end_value'] = intval($new_instance['end_value']);
         }
+
         if (is_numeric($new_instance['animate_speed'])) {
-            $instance['animate_speed'] = intval($new_instance['animate_speed']);
-            if ($instance['animate_speed'] > 100) {
-                $instance['animate_speed'] = 100;
-            }
+            $instance['animate_speed'] = min(intval($new_instance['animate_speed']), 100);
         }
+
         if (is_numeric($new_instance['persist_interval'])) {
             $instance['persist_interval'] = intval($new_instance['persist_interval']);
         }
-        // string values
-        $instance['digit_style'] =
-                strip_tags($new_instance['digit_style']);
 
-        $instance['widget_title'] =
-                strip_tags($new_instance['widget_title']);
-        // boolean values
-        $instance['show_title'] =
-                strip_tags($new_instance['show_title']);
+        if (is_numeric($new_instance['start_value']) && ($new_instance['start_value'] != $instance['start_value'])) {
+            // start value has changed, time to restart the counter
+            $instance['init_timestamp'] = time();
+            $instance['start_value'] = $new_instance['start_value'];
+        }
 
-        $instance['persist'] =
-                strip_tags($new_instance['persist']);
+        if (empty($instance['init_timestamp'])) {
+            $instance['init_timestamp'] = time();
+        }
+        return $instance;
+    }
 
-        $instance['count_down'] =
-                strip_tags($new_instance['count_down']);
+    function migrate_settings($instance){
+        // migrate from earlier versions to use new settings
+        // 'count_down' boolean is now obsolete, replaced by 'direction' (up|static|down)
 
-        $instance['display_tenths'] =
-                strip_tags($new_instance['display_tenths']);
-        $instance['init_timestamp'] = time();
-
+        if ($instance['count_down'] == 'true') {
+            // set direction to down if countdown is true
+            unset($instance['count_down']);
+            if ($instance['direction'] != 'down') {
+                $instance['direction'] = 'down';
+            }
+        } else {
+            if (! $instance['direction']) {
+                if ($instance['start_value'] < $instance['end_value']) {
+                    // standard 'counting up' counter
+                    $instance['direction'] = 'up';
+                } else {
+                    // must be a static counter
+                    $instance['direction'] = 'static';
+                }
+            }
+        }
         return $instance;
     }
 
@@ -304,130 +404,151 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 
         // Extract members of args array as individual variables
         extract($args);
-        $widget_title = $instance['widget_title'];
-        $show_title = $instance['show_title'];
+
+        // migrate obsolete settings
+        if (!empty($instance['count_down'])) {
+            $instance = migrate_settings($instance);
+        }
+
+        // these options were not in the first release so to play nice
+        // we'll add some defaults here to avoid any undefined indexes
+
+        $persist_interval = (!empty($instance['persist_interval']) ?
+                        $instance['persist_interval'] : 1 );
+
+        $init_timestamp = (!empty($instance['init_timestamp']) ?
+                        $instance['init_timestamp'] : time() );
+        //
+
+        $disable_title = $instance['disable_title'] == 'on' ? 'true' : 'false';
+        $tenths = $instance['disable_tenths'] == 'on' ? 'false' : 'true';
+        $disable_depth = $instance['disable_depth'] == 'on' ? 'true' : 'false';
+        $persist = $instance['persist'] == 'on' ? 'true' : 'false';
+
         $number_of_digits = $instance['number_of_digits'];
         $start_value = $instance['start_value'];
         $end_value = $instance['end_value'];
-        $display_tenths = $instance['display_tenths'];
+
         $animate_speed = $instance['animate_speed'];
+        $wait_time = max(0, (100 - $animate_speed));
+
         $digit_height = $instance['digit_height'];
         $digit_width = $instance['digit_width'];
         $digit_padding = $instance['digit_padding'];
         $digit_bustedness = $instance['digit_bustedness'];
         $digit_style = $instance['digit_style'];
-
-        //these were added at v0.7 and may not have defaults for existing widgets
-        //so we'll add some defaults here to avoid any undefined indexes
-
-        $persist = (!empty($instance['persist']) ?
-                        esc_attr($instance['persist']) :
-                        'false' );
-
-        $persist_interval = (!empty($instance['persist_interval']) ?
-                        esc_attr($instance['persist_interval']) :
-                        '1' );
-
-        $init_timestamp = (!empty($instance['init_timestamp']) ?
-                        esc_attr($instance['init_timestamp']) :
-                        time() );
-        // Added in v0.8
-        $count_down = (!empty($instance['count_down']) ?
-                        esc_attr($instance['count_down']) :
-                        'false' );
+        $widget_title = $instance['widget_title'];
+        $before_text = esc_attr($instance['before_text']);
+        $after_text = esc_attr($instance['after_text']);
+        $direction = $instance['direction'];
 
         if ($persist == 'true') {
-            if ( $count_down == 'true') {
+            // calculate how may 'counts' have passed since initializing the counter widget
+            // and update the start_value appropriately. If we have already passed the end_value
+            // then we don't want to continue counting.
+            if ( $direction == 'down') {
                 $start_value = $start_value - round((time() - $init_timestamp) / $persist_interval);
                 if ($start_value < $end_value) {
                     $start_value = $end_value;
                 }
-            } else {
+            } elseif ( $direction == 'up') {
                 $start_value = $start_value + round((time() - $init_timestamp) / $persist_interval);
                 if ($start_value > $end_value) {
                     $start_value = $end_value;
                 }
             }
             $animate_speed = 100;
-            $display_tenths = 0;
+            $tenths = 'false';
         } else {
             $persist_interval = 1;
         }
-        // Display widget title
+
+        $persist_interval_ms = $persist_interval * 1000;
+
+        if ($direction == 'static') {
+            $end_value = $start_value;
+        }
+
+        // Begin widget output
         echo $before_widget;
-        if ($show_title == 'true') {
+        if ($disable_title == 'false') {
             echo $before_title;
             echo apply_filters('widget_title', $widget_title);
             echo $after_title;
         }
-
-        // output counter div
+        if ($before_text) {
+            echo '<div class="odometer-description">';
+            echo apply_filters('the_content', $before_text);
+            echo '</div>';
+        }
         echo '<div id="odometer-' . $args['widget_id'] . '" class="odometer-widget"></div>';
+        if ($after_text) {
+            echo '<div class="odometer-description">';
+            echo apply_filters('the_content', $after_text);
+            echo '</div>';
+        }
         // output javascript
         echo "<script type='text/javascript'>
                 jQuery(document).ready(function() {
-                        var waitTime = (100 - $animate_speed);
-                        var counterStartValue = $start_value;
-                        var counterEndValue = $end_value;
-                        var counterNow = $start_value;
-                        var wholeNumber = 0;
-                        var persist = $persist;
-                        var countDown = $count_down;
-                        var div = document.getElementById('odometer-" . $args['widget_id'] . "');
-                        var myOdometer = new Odometer(div, {
-                                       digits: $number_of_digits,
-                                       tenths: $display_tenths,
-                                       digitHeight: $digit_height,
-                                       digitWidth: $digit_width,
-                                       digitPadding: $digit_padding,
-                                       fontStyle: '$digit_style',
-                                       bustedness: $digit_bustedness
-                                       });
+                    var waitTime = $wait_time;
+                    var counterStartValue = $start_value;
+                    var counterEndValue = $end_value;
+                    var counterNow = $start_value;
+                    var direction = '$direction';
+                    var wholeNumber = 0;
+                    var persist = $persist;
+                    var div = document.getElementById('odometer-" . $args['widget_id'] . "');
+                    var myOdometer = new Odometer(div, {
+                        digits: $number_of_digits,
+                        tenths: $tenths,
+                        digitHeight: $digit_height,
+                        digitWidth: $digit_width,
+                        digitPadding: $digit_padding,
+                        fontStyle: '$digit_style',
+                        bustedness: $digit_bustedness,
+                        disableHighlights: $disable_depth
+                    });
 
-                         function updateOdometer() {
-                            if (persist) {
-                                if (countDown) {
-                                    counterNow=counterNow-0.15;
-                                 } else {
-                                    counterNow=counterNow+0.15;
-                                }
-                                wholeNumber=wholeNumber+0.15;
-                                if (wholeNumber >= 1) {
-                                    wholeNumber = 0;
-                                    counterNow = Math.round(counterNow);
-                                    waitTime = ($persist_interval * 1000);
-                                } else {
-                                    waitTime = 1;
-                                }
+                    function updateOdometer() {
+                        if (persist) {
+                            if (direction =='down') {
+                                counterNow=counterNow-0.15;
                             } else {
-                                 if (countDown) {
-                                    counterNow=counterNow-0.01;
-                                 } else {
-                                    counterNow=counterNow+0.01;
-                                 }
-                                 waitTime = (100 - $animate_speed);
+                                counterNow=counterNow+0.15;
                             }
-                                if (( !countDown && (counterNow < counterEndValue)) || (countDown && (counterNow > counterEndValue))) {
-                                    myOdometer.set(counterNow);
-                                    window.setTimeout(function() {
-                                        updateOdometer();
-                                    }, waitTime);
-                                }
-			}
-
-                        if ( counterEndValue != counterStartValue) {
-                            myOdometer.set(counterStartValue);
-                            updateOdometer();
+                            wholeNumber=wholeNumber+0.15;
+                            if (wholeNumber >= 1) {
+                                wholeNumber = 0;
+                                counterNow = Math.round(counterNow);
+                                waitTime = $persist_interval_ms;
+                            } else {
+                                waitTime = 1;
+                            }
                         } else {
-                            myOdometer.set(counterStartValue);
+                            if (direction =='down') {
+                                counterNow=counterNow-0.01;
+                            } else {
+                                counterNow=counterNow+0.01;
+                            }
+                        }
+                        if (( direction !='down' && (counterNow < counterEndValue)) || (direction =='down' && (counterNow > counterEndValue))) {
+                            myOdometer.set(counterNow);
+                            window.setTimeout(function() {
+                                updateOdometer();
+                            }, waitTime);
                         }
                     }
-                );
-	</script>";
 
+                    if ( counterEndValue != counterStartValue) {
+                        myOdometer.set(counterStartValue);
+                        updateOdometer();
+                    } else {
+                        myOdometer.set(counterStartValue);
+                    }
+                });
+            </script>";
         // finish off widget
         echo $after_widget;
     }
-
 }
 ?>

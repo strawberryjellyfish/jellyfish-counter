@@ -29,10 +29,13 @@ function Odometer (parentDiv,opts) {
     this.bustedness   = 2;
     this.fontStyle    = "font-family: Courier New, Courier, monospace; font-weight: 900;";
     this.value        = -1;
+    this.disableHighlights = false;
 
     for (var key in opts) { this[key] = opts[key]; }
 
-    // added line-height here to fix strangeness caused by inhereted css styles
+    // Jellyfish Counter modification (http://strawberryjellyfish.com/wordpress-plugin-jellyfish-counter-widget/)
+    //
+    // added line-height to fix strangeness caused by inhereted css styles
     var style = {
         digits:        "position:absolute; height:"+this.digitHeight+"px; width:"+(this.digitWidth-(2*this.digitPadding))+"px; "+
                        "padding:"+this.digitPadding+"px; font-size:"+(this.digitHeight-(2*this.digitPadding))+"px; "+
@@ -119,11 +122,13 @@ function Odometer (parentDiv,opts) {
         digitColDiv.appendChild(digitDivB);
         digitColDiv.appendChild(digitDivA);
 
-        for (var j in highlights) {
-            var hdiv = document.createElement("div");
-            hdiv.innerHTML="<p></p>"; // For Dumb IE
-            hdiv.style.cssText = highlights[j];
-            digitColDiv.appendChild(hdiv);
+        if (!this.disableHighlights) {
+            for (var j in highlights) {
+                var hdiv = document.createElement("div");
+                hdiv.innerHTML="<p></p>"; // For Dumb IE
+                hdiv.style.cssText = highlights[j];
+                digitColDiv.appendChild(hdiv);
+            }
         }
         odometerDiv.appendChild(digitColDiv);
 	var offset = Math.floor(Math.random()*this.bustedness);
