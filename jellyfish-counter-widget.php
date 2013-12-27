@@ -29,7 +29,6 @@
 
 add_action('init', 'jellyfish_cw_action_init');
 add_action('widgets_init', 'jellyfish_cw_create_widgets');
-register_activation_hook( __FILE__, 'jellyfish_cw_activate' );
 
 function jellyfish_cw_create_widgets() {
 	register_widget('Jellyfish_Counter_Widget');
@@ -37,29 +36,6 @@ function jellyfish_cw_create_widgets() {
 
 function jellyfish_cw_action_init() {
 	load_plugin_textdomain('jellyfish_cw', false, dirname(plugin_basename(__FILE__)));
-}
-
-function jellyfish_cw_activate() {
-	// migrate options from earlier versions
-	$multi_widget_options = get_option('widget_counter_widget');
-	foreach($multi_widget_options as $key => $widget_options) {
-		if (is_array($multi_widget_options[$key])) {
-			if (array_key_exists('show_title', $multi_widget_options[$key])) {
-				$multi_widget_options[$key]['disable_title'] = $multi_widget_options[$key]['show_title'] ? '': 'on';
-				unset($multi_widget_options[$key]['show_title']);
-			}
-			if (array_key_exists('display_tenths', $multi_widget_options[$key])) {
-			  $multi_widget_options[$key]['disable_tenths'] = $multi_widget_options[$key]['display_tenths'] ? '': 'on';
-			  unset($multi_widget_options[$key]['display_tenths']);
-			}
-			if (array_key_exists('persist', $multi_widget_options[$key])) {
-			  $multi_widget_options[$key]['persist'] = $multi_widget_options[$key]['persist'] ? 'on' : '';
-			}
-			$multi_widget_options[$key]['direction'] = isset($multi_widget_options[$key]['count_down']) ? 'down': 'up';
-			unset($multi_widget_options[$key]['count_down']);
-		}
-	}
-	update_option('widget_counter_widget',$multi_widget_options);
 }
 
 // Counter Widget class
@@ -77,7 +53,7 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 		$disable_title = $instance['disable_title'];
 		$disable_depth = $instance['disable_depth'];
 		$disable_tenths = $instance['disable_tenths'];
-		$persist = isset($instance['persist']) ? 'on' : null;
+		$persist = ($instance['persist'] == 'true' || $instance['persist'] == 'on') ? 'on' : null;
 		$init_timestamp = $instance['init_timestamp'];
 
 		$start_value = (is_numeric($instance['start_value']) ? $instance['start_value'] : 0 );
