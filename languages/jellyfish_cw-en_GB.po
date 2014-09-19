@@ -2,166 +2,182 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Jellyfish Counter Widget v1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-12-27 03:00:14+0000\n"
+"POT-Creation-Date: 2014-09-19 19:14+0930\n"
+"PO-Revision-Date: 2014-09-19 19:15+0930\n"
 "Last-Translator: Rob Miller <rob@strawberryjellyfish.com>\n"
 "Language-Team: \n"
+"Language: en_GB\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: CSL v1.x\n"
-"X-Poedit-Language: English\n"
-"X-Poedit-Country: UNITED KINGDOM\n"
+"X-Generator: Poedit 1.6.3\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2;\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
+"_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2\n"
 "X-Poedit-Basepath: ../\n"
-"X-Poedit-Bookmarks: \n"
+"X-Textdomain-Support: yes\n"
 "X-Poedit-SearchPath-0: .\n"
-"X-Textdomain-Support: yes"
 
-#: jellyfish-counter-widget.php:97
-#@ jellyfish_cw
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:94
 msgid "Start Value:"
 msgstr "Start Value:"
 
-#: jellyfish-counter-widget.php:114
-#@ jellyfish_cw
-msgid "End Value:"
-msgstr "End Value:"
-
-#: jellyfish-counter-widget.php:125
-#@ jellyfish_cw
-msgid "Counter Type:"
-msgstr "Counter Type:"
-
-#: jellyfish-counter-widget.php:130
-#@ jellyfish_cw
-msgid "Count Up"
-msgstr "Count Up"
-
-#: jellyfish-counter-widget.php:133
-#@ jellyfish_cw
-msgid "Static"
-msgstr "Static"
-
-#: jellyfish-counter-widget.php:136
-#@ jellyfish_cw
-msgid "Count Down"
-msgstr "Count Down"
-
-#: jellyfish-counter-widget.php:146
-#@ jellyfish_cw
-msgid "Continuous Counter"
-msgstr "Continuous Counter"
-
-#: jellyfish-counter-widget.php:150
-#@ jellyfish_cw
-msgid "Counts continuously in the background, starts as soon as this widget is saved."
-msgstr "Counts continuously in the background, starts as soon as this widget is saved."
-
-#: jellyfish-counter-widget.php:155
-#@ jellyfish_cw
-msgid "Continuous Interval:"
-msgstr "Continuous Interval:"
-
-#: jellyfish-counter-widget.php:162
-#@ jellyfish_cw
-msgid "seconds"
-msgstr "seconds"
-
-#: jellyfish-counter-widget.php:166
-#@ jellyfish_cw
-msgid "How often a continuous style counter updates"
-msgstr "How often a continuous style counter updates"
-
-#: jellyfish-counter-widget.php:170
-#@ jellyfish_cw
-msgid "Appearance"
-msgstr "Appearance"
-
-#: jellyfish-counter-widget.php:173
-#@ jellyfish_cw
-msgid "Widget Title:"
-msgstr "Widget Title:"
-
-#: jellyfish-counter-widget.php:187
-#@ jellyfish_cw
-msgid "Hide Title"
-msgstr "Hide Title"
-
-#: jellyfish-counter-widget.php:192
-#@ jellyfish_cw
-msgid "Text to display before counter:"
-msgstr "Text to display before counter:"
-
-#: jellyfish-counter-widget.php:200
-#@ jellyfish_cw
-msgid "Text to display after counter:"
-msgstr "Text to display after counter:"
-
-#: jellyfish-counter-widget.php:208
-#@ jellyfish_cw
-msgid "Number of Digits:"
-msgstr "Number of Digits:"
-
-#: jellyfish-counter-widget.php:222
-#@ jellyfish_cw
-msgid "Disable Tenths"
-msgstr "Disable Tenths"
-
-#: jellyfish-counter-widget.php:227
-#@ jellyfish_cw
-msgid "Animation Speed:"
-msgstr "Animation Speed:"
-
-#: jellyfish-counter-widget.php:237
-#@ jellyfish_cw
-msgid "A value (1-100). Not used for continuous style counters"
-msgstr "A value (1-100). Not used for continuous style counters"
-
-#: jellyfish-counter-widget.php:242
-#@ jellyfish_cw
-msgid "Digit Height:"
-msgstr "Digit Height:"
-
-#: jellyfish-counter-widget.php:254
-#@ jellyfish_cw
-msgid "Digit Width:"
-msgstr "Digit Width:"
-
-#: jellyfish-counter-widget.php:266
-#@ jellyfish_cw
-msgid "Digit Padding:"
-msgstr "Digit Padding:"
-
-#: jellyfish-counter-widget.php:281
-#@ jellyfish_cw
-msgid "Disable 3D effect"
-msgstr "Disable 3D effect"
-
-#: jellyfish-counter-widget.php:286
-#@ jellyfish_cw
-msgid "Bustedness:"
-msgstr "Bustedness:"
-
-#: jellyfish-counter-widget.php:299
-#@ jellyfish_cw
-msgid "Digit Style:"
-msgstr "Digit Style:"
-
-#: jellyfish-counter-widget.php:309
-#@ jellyfish_cw
-msgid "CSS entered here will alter the appearance of the digits"
-msgstr "CSS entered here will alter the appearance of the digits"
-
-#: jellyfish-counter-widget.php:107
-#@ jellyfish_cw
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:104
 msgid "This counter is active, the current count is"
 msgstr "This counter is active, the current count is"
 
-#: jellyfish-counter-widget.php:108
-#@ jellyfish_cw
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:105
 msgid "Changing the start value will restart the counter."
 msgstr "Changing the start value will restart the counter."
 
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:111
+msgid "End Value:"
+msgstr "End Value:"
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:122
+msgid "Counter Type:"
+msgstr "Counter Type:"
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:127
+msgid "Count Up"
+msgstr "Count Up"
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:130
+msgid "Static"
+msgstr "Static"
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:133
+msgid "Count Down"
+msgstr "Count Down"
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:143
+msgid "Continuous Counter"
+msgstr "Continuous Counter"
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:147
+msgid ""
+"Counts continuously in the background, starts as soon as this widget is "
+"saved."
+msgstr ""
+"Counts continuously in the background, starts as soon as this widget is "
+"saved."
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:152
+msgid "Continuous Interval:"
+msgstr "Continuous Interval:"
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:159
+msgid "seconds"
+msgstr "seconds"
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:163
+msgid "How often a continuous style counter updates"
+msgstr "How often a continuous style counter updates"
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:167
+msgid "Appearance"
+msgstr "Appearance"
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:170
+msgid "Widget Title:"
+msgstr "Widget Title:"
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:184
+msgid "Hide Title"
+msgstr "Hide Title"
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:189
+msgid "Text to display before counter:"
+msgstr "Text to display before counter:"
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:194
+msgid "Text to display after counter:"
+msgstr "Text to display after counter:"
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:199
+msgid "Number of Digits:"
+msgstr "Number of Digits:"
+
+#: jellyfish-counter-widget.php:210
+msgid "Format:"
+msgstr "Format:"
+
+#: jellyfish-counter-widget.php:219
+msgid ""
+"Allows a custom format for the counter e.g $00.00. This option with override "
+"the Number of Digits option. Any 0 will be replaced with a counter digit, "
+"any other characters will be displayed as it is."
+msgstr ""
+"Allows a custom format for the counter e.g $00.00. This option with override "
+"the Number of Digits option. Any 0 will be replaced with a counter digit, "
+"any other characters will be displayed as it is."
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:228
+msgid "Disable Tenths"
+msgstr "Disable Tenths"
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:233
+msgid "Animation Speed:"
+msgstr "Animation Speed:"
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:243
+msgid "A value (1-100). Not used for continuous style counters"
+msgstr "A value (1-100). Not used for continuous style counters"
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:248
+msgid "Digit Height:"
+msgstr "Digit Height:"
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:260
+msgid "Digit Width:"
+msgstr "Digit Width:"
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:272
+msgid "Digit Padding:"
+msgstr "Digit Padding:"
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:287
+msgid "Disable 3D effect"
+msgstr "Disable 3D effect"
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:292
+msgid "Bustedness:"
+msgstr "Bustedness:"
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:305
+msgid "Digit Style:"
+msgstr "Digit Style:"
+
+# @ jellyfish_cw
+#: jellyfish-counter-widget.php:315
+msgid "CSS entered here will alter the appearance of the digits"
+msgstr "CSS entered here will alter the appearance of the digits"
