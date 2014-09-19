@@ -4,7 +4,7 @@
 	Plugin URI: http://strawberryjellyfish.com/wordpress-plugin-jellyfish-counter-widget/
 	Description: Creates a widget with an odometer style counter that displays either a static number or animates up to a predefined value.
 	Author: Rob Miller
-	Version: 1.0
+	Version: 1.2
 	Author URI: http://strawberryjellyfish.com/
 */
 
@@ -382,9 +382,10 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 
 	function widget( $args, $instance ) {
 		// queue javascript if widget is used
-		if ( is_active_widget( false, false, $this->id_base ) )
-			wp_enqueue_script( 'odometer', plugins_url( 'js/odometer.js', __FILE__ ), array( 'jquery' ), '', true );
-
+		if ( is_active_widget( false, false, $this->id_base ) ) {
+			wp_enqueue_script( 'jellyfishOdometer', plugins_url( 'js/odometer.js', __FILE__ ), array( 'jquery' ), '', true );
+			wp_enqueue_script( 'jellyfishCounterWidget', plugins_url( 'js/jellyfish-counter-widget.js', __FILE__ ), array( 'jquery' ), '', true );
+		}
 		// Extract members of args array as individual variables
 		extract( $args );
 
@@ -443,8 +444,6 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 			$persist_interval = 1;
 		}
 
-		$persist_interval_ms = $persist_interval * 1000;
-
 		if ( $direction == 'static' ) {
 			$end_value = $start_value;
 		}
@@ -461,73 +460,29 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 			echo apply_filters( 'widget_content', $before_text );
 			echo '</div>';
 		}
-		echo '<div id="odometer-' . $args['widget_id'] . '" class="odometer-widget"></div>';
+		echo '<div id="odometer-' . $args['widget_id'] . '"
+						class="odometer-widget jellyfish-counter-widget"
+						data-digits="' . $number_of_digits .'"
+						data-format="' . $format .'"
+						data-tenths="' . $tenths .'"
+						data-digit-height="' . $digit_height .'"
+						data-digit-width="' . $digit_width .'"
+						data-digit-padding="' . $digit_padding .'"
+						data-font-style="' . $digit_style .'"
+						data-bustedness="' . $digit_bustedness .'"
+						data-disable-highlights="' . $disable_depth .'"
+						data-wait-time="' . $wait_time .'"
+						data-start-value="' . $start_value .'"
+						data-end-value="' . $end_value .'"
+						data-direction="' . $direction .'"
+						data-persist="' . $persist .'"
+						data-persist-interval="' . $persist_interval .'">
+					</div>';
 		if ( $after_text ) {
 			echo '<div class="odometer-description">';
 			echo apply_filters( 'widget_content', $after_text );
 			echo '</div>';
 		}
-		// output javascript
-		echo "<script type='text/javascript'>
-				jQuery(document).ready(function() {
-					var waitTime = $wait_time;
-					var counterStartValue = $start_value;
-					var counterEndValue = $end_value;
-					var counterNow = $start_value;
-					var direction = '$direction';
-					var wholeNumber = 0;
-					var persist = $persist;
-					var div = document.getElementById('odometer-" . $args['widget_id'] . "');
-					var myOdometer = new Odometer(div, {
-						digits: $number_of_digits,
-						format: '$format',
-						tenths: $tenths,
-						digitHeight: $digit_height,
-						digitWidth: $digit_width,
-						digitPadding: $digit_padding,
-						fontStyle: '$digit_style',
-						bustedness: $digit_bustedness,
-						disableHighlights: $disable_depth
-					});
-
-					function updateOdometer() {
-						if (persist) {
-							if (direction =='down') {
-								counterNow=counterNow-0.15;
-							} else {
-								counterNow=counterNow+0.15;
-							}
-							wholeNumber=wholeNumber+0.15;
-							if (wholeNumber >= 1) {
-								wholeNumber = 0;
-								counterNow = Math.round(counterNow);
-								waitTime = $persist_interval_ms;
-							} else {
-								waitTime = 1;
-							}
-						} else {
-							if (direction =='down') {
-								counterNow=counterNow-0.01;
-							} else {
-								counterNow=counterNow+0.01;
-							}
-						}
-						if (( direction !='down' && (counterNow < counterEndValue)) || (direction =='down' && (counterNow > counterEndValue))) {
-							myOdometer.set(counterNow);
-							window.setTimeout(function() {
-								updateOdometer();
-							}, waitTime);
-						}
-					}
-
-					if ( counterEndValue != counterStartValue) {
-						myOdometer.set(counterStartValue);
-						updateOdometer();
-					} else {
-						myOdometer.set(counterStartValue);
-					}
-				});
-			</script>";
 		// finish off widget
 		echo $after_widget;
 	}

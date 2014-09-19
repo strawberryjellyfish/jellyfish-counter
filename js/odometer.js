@@ -1,6 +1,6 @@
 //============================================================================//
 //  Animated Odometer class for use in Jellyfish Counter Widget for WordPress
-//  Version 1.4
+//  Version 1.6
 //  Copyright (C) 2014 Robert Miller
 //  http://strawberryjellyfish.com
 //
@@ -24,25 +24,38 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //============================================================================//
 
-function Odometer(parentDiv, opts) {
-	if (!parentDiv) throw "ERROR: Odometer object must be passed a document element.";
+function Odometer(container) {
+	if (!container) throw "ERROR: Odometer object must be passed a document element.";
 
+	this.container = container;
 	this.format = '';
 	this.digits = 6;
-	this.tenths = 0;
+	this.tenths = true;
 	this.digitHeight = 40;
 	this.digitPadding = 0;
 	this.digitWidth = 30;
 	this.bustedness = 2;
 	this.fontStyle =
 		"font-family: Courier New, Courier, monospace; font-weight: 900;";
-	this.value = -1;
+	this.value = 0;
 	this.disableHighlights = false;
 
+	this.waitTime = 10;
+	this.startValue = 0;
+	this.endValue = 100;
+	this.currentValue = 0;
+	this.direction = 'up';
+	this.wholeNumber = 0;
+	this.persist = false;
+	this.persistInterval = 1;
+	var opts = jQuery(this.container).data();
+	console.log(opts);
 	for (var key in opts) {
+		console.log(key + " " +opts[key]);
 		this[key] = opts[key];
 	}
 
+	this.currentValue = this.startValue;
 	// format allows for non counting characters in the counter,
 	// e.g a prefix or separator character
 	// if defined we'll override the number of digits to the number
@@ -53,9 +66,7 @@ function Odometer(parentDiv, opts) {
 	} else {
 		this.format = new Array(this.digits + 1).join('0');
 	}
-	// Jellyfish Counter modification (http://strawberryjellyfish.com/wordpress-plugin-jellyfish-counter-widget/)
-	//
-	// added line-height to fix strangeness caused by inhereted css styles
+
 	this.style = {
 		digits: "position:absolute; height:" + this.digitHeight + "px; width:" + (
 			this.digitWidth - (2 * this.digitPadding)) + "px; " +
@@ -157,33 +168,78 @@ function Odometer(parentDiv, opts) {
 		}
 	};
 
-	var odometerDiv = document.createElement("div")
-	odometerDiv.style.cssText = "text-align: left; width:" + (this.digitWidth * (
+	this.drawOdometer = function(container) {
+		var odometerDiv = document.createElement("div")
+		odometerDiv.style.cssText = "text-align: left; width:" + (this.digitWidth * (
 		this.format.length)) + "px; height:" + this.digitHeight + "px";
-	parentDiv.appendChild(odometerDiv);
+		container.appendChild(odometerDiv);
 
-	for (var i = 0; i < this.format.length; i++) {
-		var character = this.format.charAt(i);
-		if (character == '0') {
-			var digitColDiv = this.drawDigit(i);
-		} else {
-			var separator = document.createElement("div");
-			separator.innerHTML = character;
-			separator.style.cssText = this.style.digits;
-			var digitColDiv = document.createElement("div");
-			digitColDiv.style.cssText = this.style.columns;
-			digitColDiv.appendChild(separator);
+		for (var i = 0; i < this.format.length; i++) {
+			var character = this.format.charAt(i);
+			if (character == '0') {
+				var digitColDiv = this.drawDigit(i);
+			} else {
+				var separator = document.createElement("div");
+				separator.innerHTML = character;
+				separator.style.cssText = this.style.digits;
+				var digitColDiv = document.createElement("div");
+				digitColDiv.style.cssText = this.style.columns;
+				digitColDiv.appendChild(separator);
+			}
+        	this.drawHighLights(digitColDiv);
+        	odometerDiv.appendChild(digitColDiv);
+		};
+
+		if (this.tenths) {
+			this.digitInfo[this.digits - 1].digitA.style.background = "#cccccc";
+			this.digitInfo[this.digits - 1].digitB.style.background = "#cccccc";
+			this.digitInfo[this.digits - 1].digitA.style.color = "#000000";
+			this.digitInfo[this.digits - 1].digitB.style.color = "#000000";
 		}
-        this.drawHighLights(digitColDiv);
-        odometerDiv.appendChild(digitColDiv);
+
+		if (this.value >= 0) this.set(this.value);
 	};
 
-	if (this.tenths) {
-		this.digitInfo[this.digits - 1].digitA.style.background = "#cccccc";
-		this.digitInfo[this.digits - 1].digitB.style.background = "#cccccc";
-		this.digitInfo[this.digits - 1].digitA.style.color = "#000000";
-		this.digitInfo[this.digits - 1].digitB.style.color = "#000000";
-	}
+	this.updateOdometer = function() {
+		if (this.persist) {
+			if (this.direction == 'down') {
+				this.currentValue = this.currentValue - 0.15;
+			} else {
+				this.currentValue = this.currentValue + 0.15;
+			}
+			this.wholeNumber = this.wholeNumber + 0.15;
+			if (this.wholeNumber >= 1) {
+				this.wholeNumber = 0;
+				this.currentValue = Math.round(this.currentValue);
+				this.waitTime = this.persistInterval * 1000;
+			} else {
+				this.waitTime = 1;
+			}
+		} else {
+			if (this.direction == 'down') {
+				this.currentValue = this.currentValue - 0.01;
+			} else {
+				this.currentValue = this.currentValue + 0.01;
+			}
+		}
+		if (( this.direction != 'down' && (this.currentValue < this.endValue)) ||
+		    (this.direction == 'down' && (this.currentValue > this.endValue))) {
+			this.set(this.currentValue);
+			var that = this;
+			window.setTimeout(function() {
+				that.updateOdometer();
+			}, this.waitTime);
+		}
+	};
 
-	if (this.value >= 0) this.set(this.value);
+	this.init = function(paused) {
+		this.drawOdometer(this.container);
+		if ( this.endValue != this.startValue) {
+			this.set(this.startValue);
+			if (!paused)
+				this.updateOdometer();
+		} else {
+			this.set(this.startValue);
+		}
+	};
 }

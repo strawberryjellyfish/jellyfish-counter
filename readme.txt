@@ -76,7 +76,8 @@ starting value.
 Note: In continuous mode, animation speed and display tenths have no effect.
 
 The counter is very configurable through the widget panel. You can define the
-digit height, width and font as well as animation speed (animated mode only) and "bustedness" (misalignment of the digits). Additionally, through "Digit Style"
+digit height, width and font as well as animation speed (animated mode only) and
+"bustedness" (misalignment of the digits). Additionally, through "Digit Style"
 setting you can specify a font, font style, colour, background or any other CSS
 display properties for the digits.
 Note: you cannot adjust the size of the font here as is automatically calculated
@@ -94,6 +95,11 @@ has its own settings.
 
 
 == Changelog ==
+
+= 1.2 =
+* Another major refactoring of JavaScript. All counter functions are now part
+of the odometer class which now takes it's configuration from data attributes
+on the counter container element. No more inline JavaScript!
 
 = 1.1 =
 * No longer use widget_content filter instead of the_content filter on widget
