@@ -100,6 +100,9 @@ has its own settings.
 * Another major refactoring of JavaScript. All counter functions are now part
 of the odometer class which now takes it's configuration from data attributes
 on the counter container element. No more inline JavaScript!
+* Much of the inline CSS has now been abstracted to a base stylesheet making
+it easier to restyle counters. Individual counter can still be styled through
+their widgets.
 
 = 1.1 =
 * No longer use widget_content filter instead of the_content filter on widget

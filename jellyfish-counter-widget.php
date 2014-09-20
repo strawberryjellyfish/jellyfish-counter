@@ -36,6 +36,7 @@ function jellyfish_cw_create_widgets() {
 
 function jellyfish_cw_action_init() {
 	load_plugin_textdomain( 'jellyfish_cw', false, dirname( plugin_basename( __FILE__ ) ) );
+	wp_register_style( 'jellyfishCounterWidgetCSS', plugins_url('css/jellyfish-counter-widget.css', __FILE__) );
 }
 
 // Counter Widget class
@@ -74,6 +75,7 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 		$format = $instance['format'];
 
 		// get the current count of an active continuous counter
+		// set to end value if it's already finished
 		if ( ( $persist == 'on' ) && !empty( $init_timestamp ) ) {
 			if ( $direction == 'down' ) {
 				$current_value = $start_value - round( ( time() - $init_timestamp ) / $persist_interval );
@@ -93,11 +95,11 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 			<label for="<?php echo $this->get_field_id( 'start_value' ); ?>">
 				<?php echo _e( 'Start Value:', 'jellyfish_cw' ); ?>
 				<input type="text"
-					   id="<?php echo $this->get_field_id( 'start_value' ); ?>"
-					   name="<?php echo $this->get_field_name( 'start_value' ); ?>"
-					   value="<?php echo $start_value; ?>"
-					   class="widefat"
-					   />
+					id="<?php echo $this->get_field_id( 'start_value' ); ?>"
+					name="<?php echo $this->get_field_name( 'start_value' ); ?>"
+					value="<?php echo $start_value; ?>"
+					class="widefat"
+				/>
 			</label>
 		<?php if ( ( $persist == 'on' ) && ( isset( $current_value ) ) ) { ?>
 			<span class="description">
@@ -110,26 +112,26 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 			<label for="<?php echo $this->get_field_id( 'end_value' ); ?>">
 				<?php _e( 'End Value:', 'jellyfish_cw' ); ?>
 				<input type="text"
-					   id="<?php echo $this->get_field_id( 'end_value' ); ?>"
-					   name="<?php echo $this->get_field_name( 'end_value' ); ?>"
-					   value="<?php echo $end_value; ?>"
-					   class="widefat"
-					   />
+					id="<?php echo $this->get_field_id( 'end_value' ); ?>"
+					name="<?php echo $this->get_field_name( 'end_value' ); ?>"
+					value="<?php echo $end_value; ?>"
+					class="widefat"
+				/>
 			</label>
 		</p>
 		<p>
 			<label for="<?php echo $this->get_field_id( 'direction' ); ?>">
 				<?php _e( 'Counter Type:', 'jellyfish_cw' ); ?>
 				<select id="<?php echo $this->get_field_id( 'direction' ); ?>"
-						name="<?php echo $this->get_field_name( 'direction' ); ?>">
+					name="<?php echo $this->get_field_name( 'direction' ); ?>">
 					<option value="up"
-							<?php selected( $direction, 'up' ); ?>>
+						<?php selected( $direction, 'up' ); ?>>
 						<?php _e( 'Count Up', 'jellyfish_cw' ); ?></option>
 					<option value="static"
-							<?php selected( $direction, 'static' ); ?>>
+						<?php selected( $direction, 'static' ); ?>>
 						<?php _e( 'Static', 'jellyfish_cw' ); ?></option>
 					<option value="down"
-							<?php selected( $direction, 'down' ); ?>>
+						<?php selected( $direction, 'down' ); ?>>
 						<?php _e( 'Count Down', 'jellyfish_cw' ); ?></option>
 				</select>
 			</label>
@@ -137,8 +139,8 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 		<p>
 			<input class="checkbox" type="checkbox" <?php checked( $persist, 'on' ); ?>
 				id="<?php echo $this->get_field_id( 'persist' ); ?>"
-				name="<?php echo $this->get_field_name( 'persist' ); ?>" />
-
+				name="<?php echo $this->get_field_name( 'persist' ); ?>"
+			/>
 			<label for="<?php echo $this->get_field_id( 'persist' ); ?>">
 				<?php _e( 'Continuous Counter', 'jellyfish_cw' ); ?>
 			</label>
@@ -151,12 +153,12 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 			<label for="<?php echo $this->get_field_id( 'persist_interval' ); ?>">
 				<?php _e( 'Continuous Interval:', 'jellyfish_cw' ); ?>
 				<input type="text"
-					   id="<?php echo $this->get_field_id( 'persist_interval' ); ?>"
-					   name="<?php echo $this->get_field_name( 'persist_interval' ); ?>"
-					   value="<?php echo $persist_interval; ?>"
-					   size=6
-					   />
-				 <?php _e( 'seconds', 'jellyfish_cw' ); ?>
+					id="<?php echo $this->get_field_id( 'persist_interval' ); ?>"
+					name="<?php echo $this->get_field_name( 'persist_interval' ); ?>"
+					value="<?php echo $persist_interval; ?>"
+					size=6
+				/>
+				<?php _e( 'seconds', 'jellyfish_cw' ); ?>
 			</label>
 			<br/>
 			<span class="description">
@@ -169,56 +171,58 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 			<label for="<?php echo $this->get_field_id( 'widget_title' ); ?>">
 				<?php _e( 'Widget Title:', 'jellyfish_cw' ); ?>
 				<input type="text"
-					   id="<?php echo $this->get_field_id( 'widget_title' ); ?>"
-					   name="<?php echo $this->get_field_name( 'widget_title' ); ?>"
-					   value="<?php echo $widget_title; ?>"
-					   class="widefat"
+					id="<?php echo $this->get_field_id( 'widget_title' ); ?>"
+					name="<?php echo $this->get_field_name( 'widget_title' ); ?>"
+					value="<?php echo $widget_title; ?>"
+					class="widefat"
 				/>
 			</label>
 		</p>
 		<p>
 			<input class="checkbox" type="checkbox" <?php checked( $disable_title, 'on' ); ?>
 				id="<?php echo $this->get_field_id( 'disable_title' ); ?>"
-				name="<?php echo $this->get_field_name( 'disable_title' ); ?>" />
+				name="<?php echo $this->get_field_name( 'disable_title' ); ?>"
+			/>
 			<label for="<?php echo $this->get_field_id( 'disable_title' ); ?>">
 				<?php _e( 'Hide Title', 'jellyfish_cw' ); ?>
 			</label>
 		</p>
 		<p>
 			<label for="<?php echo $this->get_field_id( 'before_text' ); ?>">
-				<?php _e( 'Text to display before counter:', 'jellyfish_cw' ); ?></label>
+				<?php _e( 'Text to display before counter:', 'jellyfish_cw' ); ?>
+			</label>
 			<textarea id="<?php echo $this->get_field_id( 'before_text' ); ?>" class="widefat" name="<?php echo $this->get_field_name( 'before_text' ); ?>"><?php echo $before_text; ?></textarea>
 		</p>
 		<p>
 			<label for="<?php echo $this->get_field_id( 'after_text' ); ?>">
-				<?php _e( 'Text to display after counter:', 'jellyfish_cw' ); ?></label>
+				<?php _e( 'Text to display after counter:', 'jellyfish_cw' ); ?>
+			</label>
 			<textarea id="<?php echo $this->get_field_id( 'after_text' ); ?>" class="widefat" name="<?php echo $this->get_field_name( 'after_text' ); ?>"><?php echo $after_text; ?></textarea>
 		</p>
 		<p>
 			<label for="<?php echo $this->get_field_id( 'number_of_digits' ); ?>">
 				<?php _e( 'Number of Digits:', 'jellyfish_cw' ); ?>
 				<input type="text"
-					   id="<?php echo $this->get_field_id( 'number_of_digits' ); ?>"
-					   name="<?php echo $this->get_field_name( 'number_of_digits' ); ?>"
-					   value="<?php echo $number_of_digits; ?>"
-					   size=3
-					   />
+					id="<?php echo $this->get_field_id( 'number_of_digits' ); ?>"
+					name="<?php echo $this->get_field_name( 'number_of_digits' ); ?>"
+					value="<?php echo $number_of_digits; ?>"
+					size=3
+				/>
 			</label>
 		</p>
 		<p>
 			<label for="<?php echo $this->get_field_id( 'format' ); ?>">
 				<?php _e( 'Format:', 'jellyfish_cw' ); ?>
 				<input type="text"
-					   id="<?php echo $this->get_field_id( 'format' ); ?>"
-					   name="<?php echo $this->get_field_name( 'format' ); ?>"
-					   value="<?php echo $format; ?>"
-					   />
+					id="<?php echo $this->get_field_id( 'format' ); ?>"
+					name="<?php echo $this->get_field_name( 'format' ); ?>"
+					value="<?php echo $format; ?>"
+				/>
 			</label>
 			<br/>
 			<span class="description">
 				<?php _e( 'Allows a custom format for the counter e.g $00.00. This option with override the Number of Digits option. Any 0 will be replaced with a counter digit, any other characters will be displayed as it is.', 'jellyfish_cw' ); ?>
 			</span>
-		</p>
 		</p>
 		<p>
 			<input class="checkbox" type="checkbox" <?php checked( $disable_tenths, 'on' ); ?>
@@ -232,10 +236,10 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 			<label for="<?php echo $this->get_field_id( 'animate_speed' ); ?>">
 				<?php _e( 'Animation Speed:', 'jellyfish_cw' ); ?>
 				<input type="text"
-					   id="<?php echo $this->get_field_id( 'animate_speed' ); ?>"
-					   name="<?php echo $this->get_field_name( 'animate_speed' ); ?>"
-					   value="<?php echo $animate_speed; ?>"
-					   size=3
+					id="<?php echo $this->get_field_id( 'animate_speed' ); ?>"
+					name="<?php echo $this->get_field_name( 'animate_speed' ); ?>"
+					value="<?php echo $animate_speed; ?>"
+					size=3
 				/>
 			</label>
 			<br/>
@@ -247,10 +251,10 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 			<label for="<?php echo $this->get_field_id( 'digit_height' ); ?>">
 				<?php _e( 'Digit Height:', 'jellyfish_cw' ); ?>
 				<input type="text"
-					   id="<?php echo $this->get_field_id( 'digit_height' ); ?>"
-					   name="<?php echo $this->get_field_name( 'digit_height' ); ?>"
-					   value="<?php echo $digit_height; ?>"
-					   size=3
+					id="<?php echo $this->get_field_id( 'digit_height' ); ?>"
+					name="<?php echo $this->get_field_name( 'digit_height' ); ?>"
+					value="<?php echo $digit_height; ?>"
+					size=3
 				/>
 				<?php echo ' px'; ?>
 			</label>
@@ -259,10 +263,10 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 			<label for="<?php echo $this->get_field_id( 'digit_width' ); ?>">
 				<?php _e( 'Digit Width:', 'jellyfish_cw' ); ?>
 				<input type="text"
-					   id="<?php echo $this->get_field_id( 'digit_width' ); ?>"
-					   name="<?php echo $this->get_field_name( 'digit_width' ); ?>"
-					   value="<?php echo $digit_width; ?>"
-					   size=3
+					id="<?php echo $this->get_field_id( 'digit_width' ); ?>"
+					name="<?php echo $this->get_field_name( 'digit_width' ); ?>"
+					value="<?php echo $digit_width; ?>"
+					size=3
 				/>
 				<?php echo ' px'; ?>
 			</label>
@@ -271,10 +275,10 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 			<label for="<?php echo $this->get_field_id( 'digit_padding' ); ?>">
 				<?php _e( 'Digit Padding:', 'jellyfish_cw' ); ?>
 				<input type="text"
-					   id="<?php echo $this->get_field_id( 'digit_padding' ); ?>"
-					   name="<?php echo $this->get_field_name( 'digit_padding' ); ?>"
-					   value="<?php echo $digit_padding; ?>"
-					   size=3
+					id="<?php echo $this->get_field_id( 'digit_padding' ); ?>"
+					name="<?php echo $this->get_field_name( 'digit_padding' ); ?>"
+					value="<?php echo $digit_padding; ?>"
+					size=3
 				/>
 				<?php echo ' px'; ?>
 			</label>
@@ -291,10 +295,10 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 			<label for="<?php echo $this->get_field_id( 'digit_bustedness' ); ?>">
 				<?php _e( 'Bustedness:', 'jellyfish_cw' ); ?>
 				<input type="text"
-					   id="<?php echo $this->get_field_id( 'digit_bustedness' ); ?>"
-					   name="<?php echo $this->get_field_name( 'digit_bustedness' ); ?>"
-					   value="<?php echo $digit_bustedness; ?>"
-					   size=3
+					id="<?php echo $this->get_field_id( 'digit_bustedness' ); ?>"
+					name="<?php echo $this->get_field_name( 'digit_bustedness' ); ?>"
+					value="<?php echo $digit_bustedness; ?>"
+					size=3
 				/>
 			</label>
 			<br/>
@@ -304,10 +308,10 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 			<label for="<?php echo $this->get_field_id( 'digit_style' ); ?>">
 				<?php _e( 'Digit Style:', 'jellyfish_cw' ); ?>
 				<input type="text"
-					   id="<?php echo $this->get_field_id( 'digit_style' ); ?>"
-					   name="<?php echo $this->get_field_name( 'digit_style' ); ?>"
-					   value="<?php echo $digit_style; ?>"
-					   class="widefat"
+					id="<?php echo $this->get_field_id( 'digit_style' ); ?>"
+					name="<?php echo $this->get_field_name( 'digit_style' ); ?>"
+					value="<?php echo $digit_style; ?>"
+					class="widefat"
 				/>
 			</label>
 			<br/>
@@ -385,6 +389,7 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 		if ( is_active_widget( false, false, $this->id_base ) ) {
 			wp_enqueue_script( 'jellyfishOdometer', plugins_url( 'js/odometer.js', __FILE__ ), array( 'jquery' ), '', true );
 			wp_enqueue_script( 'jellyfishCounterWidget', plugins_url( 'js/jellyfish-counter-widget.js', __FILE__ ), array( 'jquery' ), '', true );
+			wp_enqueue_style( 'jellyfishCounterWidgetCSS' );
 		}
 		// Extract members of args array as individual variables
 		extract( $args );
@@ -424,16 +429,16 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 		$direction = $instance['direction'];
 
 		if ( $persist == 'true' ) {
-			// calculate how may 'counts' have passed since initializing the counter widget
-			// and update the start_value appropriately. If we have already passed the end_value
-			// then we don't want to continue counting.
+			// calculate how may 'counts' have passed since initializing the counter
+			// widget and update the start_value appropriately. If we have already
+			// passed the end_value then we don't want to continue counting.
 			if ( $direction == 'down' ) {
-				$start_value = $start_value - round( ( time() - $init_timestamp ) / $persist_interval );
+				$start_value -= round( ( time() - $init_timestamp ) / $persist_interval );
 				if ( $start_value < $end_value ) {
 					$start_value = $end_value;
 				}
 			} elseif ( $direction == 'up' ) {
-				$start_value = $start_value + round( ( time() - $init_timestamp ) / $persist_interval );
+				$start_value += round( ( time() - $init_timestamp ) / $persist_interval );
 				if ( $start_value > $end_value ) {
 					$start_value = $end_value;
 				}
