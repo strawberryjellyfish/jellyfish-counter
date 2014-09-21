@@ -36,7 +36,61 @@ function jellyfish_cw_create_widgets() {
 
 function jellyfish_cw_action_init() {
 	load_plugin_textdomain( 'jellyfish_cw', false, dirname( plugin_basename( __FILE__ ) ) );
-	wp_register_style( 'jellyfishCounterWidgetCSS', plugins_url('css/jellyfish-counter-widget.css', __FILE__) );
+	wp_register_style( 'jellyfish_cw_css', plugins_url( 'css/jellyfish-counter.css', __FILE__ ) );
+	wp_register_script( 'jellyfish_cw_odometer', plugins_url( 'js/jellyfish-odometer.js', __FILE__ ), array( 'jquery' ), '', true );
+	wp_register_script( 'jellyfish_cw_loader', plugins_url( 'js/jellyfish-counter-loader.js', __FILE__ ), array( 'jquery' ), '', true );
+	// Although we are delaying javascripts until we need them,
+	// there is no way of knowing if we use a shortcode or not until after the
+	// head has rendered which is too late to add css on demand...
+	// so just have to enqueue css by default.
+	wp_enqueue_style( 'jellyfish_cw_css' );
+	add_shortcode( 'jellyfish_counter', 'jellyfish_cw_shortcode_handler' );
+}
+
+function jellyfish_cw_shortcode_handler( $atts, $content = null ) {
+	static $jcw_shortcode_id = 1;
+	$a = shortcode_atts(
+		array(
+			'digits' => 6,
+			'format' => '000000',
+			'tenths' => true,
+			'digit_height' => 40,
+			'digit_width' => 30,
+			'digit_padding' => 0,
+			'digit_style' => '',
+			'bustedness' => 2,
+			'flat' => false,
+			'speed' => 80,
+			'start' => 0,
+			'end' => 0,
+			'direction' => 'up',
+			'persist' => false,
+			'interval' => 1
+		), $atts );
+	wp_enqueue_script( 'jellyfish_cw_odometer' );
+	wp_enqueue_script( 'jellyfish_cw_loader' );
+
+	$counter_html = '
+		<div id="odometer-shortcode-' . $jcw_shortcode_id . '"
+			class="odometer-shortcode jellyfish-counter"
+			data-digits="' . esc_attr( $a['digits'] ) .'"
+			data-format="' . esc_attr( $a['format'] ) .'"
+			data-tenths="' . esc_attr( $a['tenths'] ) .'"
+			data-digit-height="' . esc_attr( $a['digit_height'] ) .'"
+			data-digit-width="' . esc_attr( $a['digit_width'] ) .'"
+			data-digit-padding="' . esc_attr( $a['digit_padding'] ) .'"
+			data-digit-style="' . esc_attr( $a['digit_style'] ) .'"
+			data-bustedness="' . esc_attr( $a['bustedness'] ) .'"
+			data-flat="' . esc_attr( $a['flat'] ) .'"
+			data-wait-time="' .  max( 0, ( 100 - esc_attr( $a['speed'] ) ) ) .'"
+			data-start-value="' . esc_attr( $a['start'] ) .'"
+			data-end-value="' . esc_attr( $a['end'] ) .'"
+			data-direction="' . esc_attr( $a['direction'] ) .'"
+			data-persist="' . esc_attr( $a['persist'] ) .'"
+			data-persist-interval="' . esc_attr( $a['interval'] ) .'">
+		</div>';
+	$i++;
+	return $counter_html;
 }
 
 // Counter Widget class
@@ -387,9 +441,8 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 	function widget( $args, $instance ) {
 		// queue javascript if widget is used
 		if ( is_active_widget( false, false, $this->id_base ) ) {
-			wp_enqueue_script( 'jellyfishOdometer', plugins_url( 'js/odometer.js', __FILE__ ), array( 'jquery' ), '', true );
-			wp_enqueue_script( 'jellyfishCounterWidget', plugins_url( 'js/jellyfish-counter-widget.js', __FILE__ ), array( 'jquery' ), '', true );
-			wp_enqueue_style( 'jellyfishCounterWidgetCSS' );
+			wp_enqueue_script( 'jellyfish_cw_odometer' );
+			wp_enqueue_script( 'jellyfish_cw_loader' );
 		}
 		// Extract members of args array as individual variables
 		extract( $args );
@@ -466,16 +519,16 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 			echo '</div>';
 		}
 		echo '<div id="odometer-' . $args['widget_id'] . '"
-						class="odometer-widget jellyfish-counter-widget"
+						class="odometer-widget jellyfish-counter"
 						data-digits="' . $number_of_digits .'"
 						data-format="' . $format .'"
 						data-tenths="' . $tenths .'"
 						data-digit-height="' . $digit_height .'"
 						data-digit-width="' . $digit_width .'"
 						data-digit-padding="' . $digit_padding .'"
-						data-font-style="' . $digit_style .'"
+						data-digit-style="' . $digit_style .'"
 						data-bustedness="' . $digit_bustedness .'"
-						data-disable-highlights="' . $disable_depth .'"
+						data-flat="' . $disable_depth .'"
 						data-wait-time="' . $wait_time .'"
 						data-start-value="' . $start_value .'"
 						data-end-value="' . $end_value .'"
@@ -492,4 +545,5 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 		echo $after_widget;
 	}
 }
+
 ?>

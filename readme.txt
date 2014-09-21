@@ -96,6 +96,12 @@ has its own settings.
 
 == Changelog ==
 
+= 1.3 =
+* Shortcodes! You can now show counters directly in the post or page content
+using the [jellyfish_counter] shortcode.
+* The Odometer class has been extended further and renamed JellyfishOdometer.
+* General code cleanups and function / variable renaming
+
 = 1.2 =
 * Another major refactoring of JavaScript. All counter functions are now part
 of the odometer class which now takes it's configuration from data attributes
