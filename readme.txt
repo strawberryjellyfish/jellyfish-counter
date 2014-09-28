@@ -5,64 +5,70 @@ Donate link: http://strawberryjellyfish.com/donate/
 Plugin URI: http://strawberryjellyfish.com/wordpress-plugin-jellyfish-counter-widget/
 Tags: counter, odometer, milometer, animated, widget, totaliser
 Requires at least: 3.0
-Tested up to: 3.8
+Tested up to: 4.0
 Stable tag: 1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-A highly configurable odometer style counter widget that can display either a
-static value or animate to a predefined total over time.
+Show eye catching totals with static or animated counter widgets and shortcodes.
+Classic retro odometer style or easy customise your own custom look.
 
 == Description ==
 
-This plugin allows you to add a widgets to your WordPress web site that can
-display a static or animated odometer style counter. The counter can be used as
-a manually updated total, an automatic counter updating over time or just as an
-animated visual effect.
+The Jellyfish Counter plugin provides a widget and shortcode enabling you to
+add counters to your WordPress site.
 
-The counter can either count upwards or downwards and is suitable for both
+Counters can be used as a manually updated total, an automatic counter that
+updating over time or just as an animated visual effect.
+
+Counters can either count upwards or downwards and are suitable for both
 incrementing totals or countdown situations.
 
 A great visual effect for travel blogs or any website that wants to display a
-running total of anything.
+running total or countdown of anything.
 
-You can have as many counters as you wish, all can have individual settings for
-totals and appearance.
+Jellyfish Counters are highly configurable through the widget interface, and
+being generated using CSS and JavaScript, they require no external graphics
+files. You may have as many counters as you wish on a page, all can have
+individual settings for totals and appearance.
 
-The counters are highly configurable through the widget interface and are
-generated using CSS and Javascript, requiring no external graphics files.
+New Shortcode support allows you to generate a counter directly within any
+post or page content making counters no longer limited to your sidebar or
+other widgetable area.
+
+Advanced users will find that Jellyfish Counter objects are fully accessible
+via JavaScript and may be controlled and reconfigured as desired though your
+own custom scripting.
 
 
 Demo
 
-You can see a counter in action at http://sharkaroo.net/map
+Here's a typical counter in action at http://sharkaroo.net/map
 Using an animated counter adds visual and narrative impact to an otherwise
 static value.
 
-Another demo and further information can be found at the plugin website
+Check out the plugin homepage for more demos and further information:
 http://strawberryjellyfish.com/wordpress-plugin-jellyfish-counter-widget/
-
-This plugin uses a modified version of a javascript odometer class written by
-Gavin Brock http://gavcode.wordpress.com/2008/04/07/cssjavascript-animated-odometer/
 
 
 ==Usage==
 
+===Widget===
 Add a counter widget to your sidebar and adjust the settings to suit your
 requirements.
 
 There are three basic modes of operation:
 
-* Static - If you want the counter to simply display a non animate number just
-set a Start Value to the desired number for the counter and set the
+* Static - If you want the counter to simply display a non animated number
+just set a Start Value to the desired number for the counter and set the
 Counter Type to 'static'
 
 * Animated – If you supply both start value and end value in the widget, the
-counter will increment upwards or downwards depending on the chosen Counter Type
-until it reaches the end value. Speed of the count is controlled by the
+counter will increment upwards or downwards depending on the chosen Counter
+Type until it reaches the end value. Speed of the count is controlled by the
 Animation Speed option. Note, this counter has no memory, it will reset when a
 page is reloaded or changed but it is great for a visual effect where start and
-end values are very close together.
+end values are relatively close together.
 
 * Continuous – If you want to count over a long period of time and need your
 counter to continue to count irrespective of page loads then just select the
@@ -75,23 +81,93 @@ the start value and save the widget and the counter will restart from the new
 starting value.
 Note: In continuous mode, animation speed and display tenths have no effect.
 
-The counter is very configurable through the widget panel. You can define the
-digit height, width and font as well as animation speed (animated mode only) and
-"bustedness" (misalignment of the digits). Additionally, through "Digit Style"
-setting you can specify a font, font style, colour, background or any other CSS
-display properties for the digits.
-Note: you cannot adjust the size of the font here as is automatically calculated
-from the height / width and padding settings.
+The counters are very configurable through the widget panel. You can define
+the digit height, width and font as well as animation speed (animated mode only)
+and "bustedness" (odometer style misalignment of the digits).
 
-Need a flat looking counter? "Disable 3D effect" removes the CSS shading effect.
+You can further customise the appearance of an individual counter via the
+"Digit Style" input that will accept a valid CSS style attributes such as
+font-family, colour, background etc.
+
+Note: the size of the font here as is automatically calculated
+from the height, width and padding settings.
+
+Need a flat looking counter?
+"Disable 3D effect" removes the CSS shading effect.
+
+If you want to display a prefix on the counter or include separating
+characters, use the Format input. Just enter a string here representing your
+desired counter appearance, a 0 represents a counter digit, any other
+character will be displayed as it is. The Format option overrides the number
+of digits option, if a format string exists then the counter will use the
+total number of 0 characters as the number of digits.
+
+Example Formats:
+
+$0.00
+1,000,000
+0000 km
+
+===Shortcode===
+
+You can generate a counter directly within page or post content using the
+[jellyfish_counter] shortcode. The shortcode accepts a full range of
+parameters to provide identical functionality to the widget version.
+
+The following parameters may be used within a shortcode, see widget options
+details for:
+
+* digits : a number, Number of digits in the counter
+* format : a string,  representing any fancy display format
+* tenths : true/false, display tenths digit or not
+* digit_height : number, pixel height of digits
+* digit_width : number, pixel width of digits
+* digit_padding : number, pixel padding for digits
+* digit_style : a string, custom css styles for the digits
+* bustedness : a number, misalignment of digits
+* flat : true/false, don't show 3d effect, show 3d effect
+* speed : a number, 0 - 100, animation speed
+* start : a number, starting value for the counter
+* end : a number, ending value for the counter
+* direction : a, string 'up' or 'down'
+* interval : The number of seconds between updates of a continuous counter
+* init_time : false or a string representing the starting time for the counter
+
+If you don't specify a parameter it's default value will be used.
+
+Examples:
+
+[jellyfish_counter end=100]
+The above shortcode translates as:
+Display a counter that animates upwards from 0 to 100
+
+[jellyfish_counter start=999 end=0 direction="down"
+digit_style="background: transparent; color: red;" flat=true;
+persist="2014-09-28 9:20:21" interval=300 ]
+
+The above shortcode translates as:
+Display a counter that starts at 999 and ends at 0, counting downwards.
+It has red digits on a transparent background with no 3D shading effect.
+It is a persistent counter that started counting at 9:20:21 on 2014-09-28 and
+has been decrementing by one every 300 seconds (5 minutes) since then.
+
+
+=== Styling ===
+
+You can modify the appearance of an individual counters text through the
+widget control panel or through shortcode parameters. This should be
+sufficient for most uses.
+
+However, if you need to globally override the default counter style or make
+other CSS changes to the counter digits or container, take a look at
+jellyfish-counter.css for the appropriate class names. You should override
+this in you theme rather than modifying this css file as any changes made
+would be lost when the plugin upgrades..
 
 
 == Installation ==
 
-Extract the zip file and just drop the contents in the wp-content/plugins/
-directory of your WordPress installation and then activate the Plugin from
-Plugins page. Go to the widgets admin page to add a counter widget, each widget
-has its own settings.
+Install via your WordPress plugin admin interface and active.
 
 
 == Changelog ==
@@ -101,9 +177,13 @@ has its own settings.
 using the [jellyfish_counter] shortcode.
 * The Odometer class has been extended further and renamed JellyfishOdometer.
 * General code cleanups and function / variable renaming
+* Added completedFunction attribute to jellyfish-odometer.js to allow defining
+a callback function that will be triggered when the counter completes
+* Continuous counter timestamps use your blogs local time instead of UTC
+* Updated Readme
 
 = 1.2 =
-* Another major refactoring of JavaScript. All counter functions are now part
+* Another major re-factoring of JavaScript. All counter functions are now part
 of the odometer class which now takes it's configuration from data attributes
 on the counter container element. No more inline JavaScript!
 * Much of the inline CSS has now been abstracted to a base stylesheet making
@@ -146,3 +226,12 @@ practice to backup your database and installation before performing an upgrade.
 
 After an upgrade visit the widget admin page to check the new options available
 to your counters.
+
+Note:
+
+There have been changes in class names after vesrion 1.0, if you have added
+custom counter styles to your WordPress theme you may need to make minor
+changes to reflect the new CSS classes applied to counter elements.
+
+If you have made any changes to the plugin files they will be lost if you
+upgrade.

@@ -1,6 +1,6 @@
 //============================================================================//
 //  Animated Odometer class for use in Jellyfish Counter Widget for WordPress
-//  Version 1.8
+//  Version 1.9
 //  Copyright (C) 2014 Robert Miller
 //  http://strawberryjellyfish.com
 //
@@ -47,9 +47,11 @@ function JellyfishOdometer(container) {
 	this.currentValue = 0;
 	this.direction = 'up';
 	this.wholeNumber = 0;
-	this.persist = false;
-	this.persistInterval = 1;
+	this.timestamp = false;
+	this.interval = 1;
 	this.active = false;
+	this.completedFunction = function(){};
+	this.currentValue = this.startValue;
 
 	// get all instance specific configuration from container data attributes
 	var opts = jQuery(this.container).data();
@@ -57,15 +59,19 @@ function JellyfishOdometer(container) {
 		this[key] = opts[key];
 	}
 
+	// parse the format to allow for fancy counters!
 	if (this.format) {
 		this.digits = (this.format.match(/0/g) || []).length;
 	} else {
 		this.format = new Array(this.digits + 1).join('0');
 	}
-	if (this.persist)
-		this.tenths = false;
-	this.currentValue = this.startValue;
 
+	// continuous counters don't have tenths because of... complications.
+	if (this.timestamp)
+		this.tenths = false;
+
+	// set up styles based on config options,
+	// these will override styles in jellyfish-counter.css
 	this.style = {
 		digits: "height:" + this.digitHeight + "px; width:" + this.digitWidth +
 			"px; padding:" + this.digitPadding + "px; font-size:" +
@@ -89,6 +95,16 @@ function JellyfishOdometer(container) {
 
 	this.digitInfo = new Array();
 
+	// Initialise a counter
+	this.init = function(paused) {
+		this.active = !paused;
+		this.drawOdometer(this.container);
+		this.set(this.startValue);
+		if (this.endValue != this.startValue) {
+			this.updateOdometer();
+		}
+	};
+
 	this.setDigitValue = function(digit, val, frac) {
 		var di = this.digitInfo[digit];
 		var px = Math.floor(this.digitHeight * frac);
@@ -109,34 +125,7 @@ function JellyfishOdometer(container) {
 		}
 	};
 
-	this.set = function(inVal) {
-		if (inVal < 0)
-			throw "ERROR: JellyfishOdometer currentValue cannot be negative.";
-		this.currentValue = inVal;
-		if (this.tenths) inVal = inVal * 10;
-		var numb = Math.floor(inVal);
-		var frac = inVal - numb;
-		numb = String(numb);
-		for (var i = 0; i < this.digits; i++) {
-			var num = numb.substring(numb.length - i - 1, numb.length - i) || 0;
-			this.setDigitValue(this.digits - i - 1, num, frac);
-			if (num != 9) frac = 0;
-		}
-	};
-
-	this.get = function() {
-		return (this.currentValue);
-	};
-
-	this.start = function() {
-		this.active = true;
-		this.updateOdometer();
-	}
-
-	this.stop = function() {
-		this.active = false;
-	}
-
+	// add a digit div to the dom
 	this.drawDigit = function(i) {
 		var digitDivA = document.createElement("div");
 		digitDivA.setAttribute("id", "odometer_digit_" + i + "a");
@@ -165,6 +154,9 @@ function JellyfishOdometer(container) {
 		return digitColDiv;
 	};
 
+	// add highlight/lowlight divs to the digit div
+	// would probably be cleaner using transparent css gradients but this
+	// produces a decent stylised effect with greater old browser support
 	this.drawHighLights = function(digitColDiv) {
 		if (!this.flat) {
 			for (var j in this.highlights) {
@@ -176,6 +168,7 @@ function JellyfishOdometer(container) {
 		}
 	};
 
+	// render the complete odometer into the dom
 	this.drawOdometer = function(container) {
 		var odometerDiv = document.createElement("div");
 		odometerDiv.className = "jcw-odometer-div";
@@ -207,15 +200,21 @@ function JellyfishOdometer(container) {
 		if (this.currentValue >= 0) this.set(this.currentValue);
 	};
 
+	// Do the counting!
+	// The maths isn't precise here as JavaScript execution speed varies
+	// greatly depending on applications, devices and load...
+	// Increment/Decrement values used here have been tweaked to work
+	// reasonably in most situations which is good enough as this is
+	// just supposed to be a visual effect not a scientific instrument!
 	this.updateOdometer = function() {
-		if (this.persist) {
+		if (this.timestamp) {
 			this.currentValue = (this.direction == 'down') ?
 				this.currentValue - 0.15 : this.currentValue + 0.15;
 			this.wholeNumber = this.wholeNumber + 0.15;
 			if (this.wholeNumber >= 1) {
 				this.wholeNumber = 0;
 				this.currentValue = Math.round(this.currentValue);
-				this.waitTime = this.persistInterval * 1000;
+				this.waitTime = this.interval * 1000;
 			} else {
 				this.waitTime = 1;
 			}
@@ -233,15 +232,51 @@ function JellyfishOdometer(container) {
 			}, this.waitTime);
 		} else {
 			this.active = false;
+			this.completedFunction();
 		}
 	};
 
-	this.init = function(paused) {
-		this.active = !paused;
-		this.drawOdometer(this.container);
-		this.set(this.startValue);
-		if (this.endValue != this.startValue) {
-			this.updateOdometer();
+	// sets the current value of the counter
+	// newValue must not be less than 0 but doesn't have to be an integer
+	this.set = function(newValue) {
+		if (newValue < 0)
+			newValue = 0;
+		this.currentValue = newValue;
+		if (this.tenths)
+			newValue = newValue * 10;
+		var wholeNumber = Math.floor(newValue);
+		var fraction = newValue - wholeNumber;
+		wholeNumber = String(wholeNumber);
+		for (var i = 0; i < this.digits; i++) {
+			var digit = wholeNumber.substring(wholeNumber.length - i - 1, wholeNumber.length - i) || 0;
+			this.setDigitValue(this.digits - i - 1, digit, fraction);
+			if (digit != 9)
+				fraction = 0;
 		}
 	};
+
+	// returns the current value of the counter
+	this.get = function() {
+		return (this.currentValue);
+	};
+
+	// starts a counter if it still has some counting to do
+	// if the counter has already finished you need to reset() first
+	this.start = function() {
+		this.active = true;
+		this.updateOdometer();
+	}
+
+	// stops/pauses an active counter, can be resumed with start()
+	this.stop = function() {
+		this.active = false;
+	}
+
+	// resets a counter to it's initial (start) value,
+	// continuous counters will reset to the value they had at page load
+	this.reset = function() {
+		this.currentValue = this.startValue;
+		this.wholeNumber = 0;
+	}
+
 }

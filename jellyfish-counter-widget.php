@@ -2,9 +2,9 @@
 /*
 	Plugin Name: Jellyfish Counter Widget
 	Plugin URI: http://strawberryjellyfish.com/wordpress-plugin-jellyfish-counter-widget/
-	Description: Creates a widget with an odometer style counter that displays either a static number or animates up to a predefined value.
+	Description: Fully configurable static or animated odometer style rotating counters.
 	Author: Rob Miller
-	Version: 1.2
+	Version: 1.3
 	Author URI: http://strawberryjellyfish.com/
 */
 
@@ -39,20 +39,21 @@ function jellyfish_cw_action_init() {
 	wp_register_style( 'jellyfish_cw_css', plugins_url( 'css/jellyfish-counter.css', __FILE__ ) );
 	wp_register_script( 'jellyfish_cw_odometer', plugins_url( 'js/jellyfish-odometer.js', __FILE__ ), array( 'jquery' ), '', true );
 	wp_register_script( 'jellyfish_cw_loader', plugins_url( 'js/jellyfish-counter-loader.js', __FILE__ ), array( 'jquery' ), '', true );
-	// Although we are delaying javascripts until we need them,
-	// there is no way of knowing if we use a shortcode or not until after the
-	// head has rendered which is too late to add css on demand...
-	// so just have to enqueue css by default.
+	// there is no way of knowing if we use a shortcode or not until well after
+	// the head has rendered which is too late to add css on demand...
+	// so just have to always enqueue css by default - not ideal 8|
 	wp_enqueue_style( 'jellyfish_cw_css' );
 	add_shortcode( 'jellyfish_counter', 'jellyfish_cw_shortcode_handler' );
 }
 
 function jellyfish_cw_shortcode_handler( $atts, $content = null ) {
-	static $jcw_shortcode_id = 1;
+	global $post;
+	// merge shortcode args with default values
 	$a = shortcode_atts(
 		array(
+			'id' => time(),
 			'digits' => 6,
-			'format' => '000000',
+			'format' => '',
 			'tenths' => true,
 			'digit_height' => 40,
 			'digit_width' => 30,
@@ -64,15 +65,36 @@ function jellyfish_cw_shortcode_handler( $atts, $content = null ) {
 			'start' => 0,
 			'end' => 0,
 			'direction' => 'up',
-			'persist' => false,
+			'timestamp' => false,
 			'interval' => 1
 		), $atts );
+
+	$element_id = 'jellyfish-counter-shortcode-' . esc_attr( $a['id'] );
+
+	if ($a['timestamp']) {
+		$init_timestamp = strtotime($a['timestamp'], current_time( 'timestamp' ));
+		if ($init_timestamp) {
+			if ( $a['direction'] == 'down' ) {
+				$a['start'] -= round( ( current_time( 'timestamp' ) - $init_timestamp ) / $a['interval'] );
+				if ( $a['start'] <= $a['end'] ) {
+					$a['start'] = $a['end'];
+				}
+			} else {
+				$a['start'] += round( ( current_time( 'timestamp' ) - $init_timestamp ) / $a['interval'] );
+				if ( $a['start'] >= $a['end'] ) {
+					$a['start'] = $a['end'];
+				}
+			}
+		}
+	} else {
+		$current_value = $a['start'];
+	}
 	wp_enqueue_script( 'jellyfish_cw_odometer' );
 	wp_enqueue_script( 'jellyfish_cw_loader' );
 
 	$counter_html = '
-		<div id="odometer-shortcode-' . $jcw_shortcode_id . '"
-			class="odometer-shortcode jellyfish-counter"
+		<div id="' . $element_id . '"
+			class="jellyfish-counter"
 			data-digits="' . esc_attr( $a['digits'] ) .'"
 			data-format="' . esc_attr( $a['format'] ) .'"
 			data-tenths="' . esc_attr( $a['tenths'] ) .'"
@@ -86,12 +108,14 @@ function jellyfish_cw_shortcode_handler( $atts, $content = null ) {
 			data-start-value="' . esc_attr( $a['start'] ) .'"
 			data-end-value="' . esc_attr( $a['end'] ) .'"
 			data-direction="' . esc_attr( $a['direction'] ) .'"
-			data-persist="' . esc_attr( $a['persist'] ) .'"
-			data-persist-interval="' . esc_attr( $a['interval'] ) .'">
+			data-timestamp="' . esc_attr( $a['timestamp'] ) .'"
+			data-interval="' . esc_attr( $a['interval'] ) .'">
 		</div>';
-	$i++;
+	$jellyfish_cw_shortcode_id++;
 	return $counter_html;
 }
+
+
 
 // Counter Widget class
 class Jellyfish_Counter_Widget extends WP_Widget {
@@ -115,7 +139,7 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 		$end_value = ( is_numeric( $instance['end_value'] ) ? $instance['end_value'] : 100 );
 		$animate_speed = ( is_numeric( $instance['animate_speed'] ) ? $instance['animate_speed'] : 50 );
 		$direction = ( !empty( $instance['direction'] ) ? $instance['direction'] : 'up' );
-		$persist_interval = ( is_numeric( $instance['persist_interval'] ) ? $instance['persist_interval'] : 1 );
+		$interval = ( is_numeric( $instance['persist_interval'] ) ? $instance['persist_interval'] : 1 );
 		$number_of_digits = ( is_numeric( $instance['number_of_digits'] ) ? $instance['number_of_digits'] : 5 );
 		$digit_height = ( is_numeric( $instance['digit_height'] ) ? $instance['digit_height'] : 40 );
 		$digit_width = ( is_numeric( $instance['digit_width'] ) ? $instance['digit_width'] : 30 );
@@ -132,14 +156,14 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 		// set to end value if it's already finished
 		if ( ( $persist == 'on' ) && !empty( $init_timestamp ) ) {
 			if ( $direction == 'down' ) {
-				$current_value = $start_value - round( ( time() - $init_timestamp ) / $persist_interval );
-				if ( $current_value < $end_value ) {
-					$current_value = $end_value;
+				 $start_value -= round( ( current_time( 'timestamp' ) - $init_timestamp ) / $interval );
+				if ( $start_value < $end_value ) {
+					$start_value = $end_value;
 				}
 			} elseif ( $direction == 'up' ) {
-				$current_value = $start_value + round( ( time() - $init_timestamp ) / $persist_interval );
-				if ( $current_value > $end_value ) {
-					$current_value = $end_value;
+				$start_value += round( ( current_time( 'timestamp' ) - $init_timestamp ) / $interval );
+				if ( $start_value > $end_value ) {
+					$start_value = $end_value;
 				}
 			}
 		}
@@ -162,6 +186,7 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 			</span>
 		<?php } ?>
 		</p>
+
 		<p>
 			<label for="<?php echo $this->get_field_id( 'end_value' ); ?>">
 				<?php _e( 'End Value:', 'jellyfish_cw' ); ?>
@@ -209,7 +234,7 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 				<input type="text"
 					id="<?php echo $this->get_field_id( 'persist_interval' ); ?>"
 					name="<?php echo $this->get_field_name( 'persist_interval' ); ?>"
-					value="<?php echo $persist_interval; ?>"
+					value="<?php echo $interval; ?>"
 					size=6
 				/>
 				<?php _e( 'seconds', 'jellyfish_cw' ); ?>
@@ -428,12 +453,12 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 
 		if ( is_numeric( $new_instance['start_value'] ) && ( $new_instance['start_value'] != $instance['start_value'] ) ) {
 			// start value has changed, time to restart the counter
-			$instance['init_timestamp'] = time();
+			$instance['init_timestamp'] = current_time( 'timestamp' );
 			$instance['start_value'] = $new_instance['start_value'];
 		}
 
 		if ( empty( $instance['init_timestamp'] ) ) {
-			$instance['init_timestamp'] = time();
+			$instance['init_timestamp'] = current_time( 'timestamp' );
 		}
 		return $instance;
 	}
@@ -450,12 +475,11 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 		// these options were not in the first release so to play nice
 		// we'll add some defaults here to avoid any undefined indexes
 
-		$persist_interval = ( isset( $instance['persist_interval'] ) ?
+		$interval = ( isset( $instance['persist_interval'] ) ?
 			$instance['persist_interval'] : 1 );
 
 		$init_timestamp = ( isset( $instance['init_timestamp'] ) ?
-			$instance['init_timestamp'] : time() );
-		//
+			$instance['init_timestamp'] : current_time( 'timestamp' ) );
 
 		$disable_title = isset( $instance['disable_title'] ) ? 'true' : 'false';
 		$disable_tenths = isset( $instance['disable_tenths'] ) ? 'true' : 'false';
@@ -486,12 +510,12 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 			// widget and update the start_value appropriately. If we have already
 			// passed the end_value then we don't want to continue counting.
 			if ( $direction == 'down' ) {
-				$start_value -= round( ( time() - $init_timestamp ) / $persist_interval );
+				$start_value -= round( ( current_time( 'timestamp' ) - $init_timestamp ) / $interval );
 				if ( $start_value < $end_value ) {
 					$start_value = $end_value;
 				}
 			} elseif ( $direction == 'up' ) {
-				$start_value += round( ( time() - $init_timestamp ) / $persist_interval );
+				$start_value += round( ( current_time( 'timestamp' ) - $init_timestamp ) / $interval );
 				if ( $start_value > $end_value ) {
 					$start_value = $end_value;
 				}
@@ -499,7 +523,7 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 			$animate_speed = 100;
 			$tenths = 'false';
 		} else {
-			$persist_interval = 1;
+			$interval = 1;
 		}
 
 		if ( $direction == 'static' ) {
@@ -533,8 +557,8 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 						data-start-value="' . $start_value .'"
 						data-end-value="' . $end_value .'"
 						data-direction="' . $direction .'"
-						data-persist="' . $persist .'"
-						data-persist-interval="' . $persist_interval .'">
+						data-timestamp="' . $persist .'"
+						data-interval="' . $interval .'">
 					</div>';
 		if ( $after_text ) {
 			echo '<div class="odometer-description">';
