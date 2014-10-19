@@ -36,7 +36,7 @@ via JavaScript and may be controlled and reconfigured as desired though your
 own custom scripting.
 
 
-=Demo=
+= Demo =
 
 Here's a typical counter in action at http://sharkaroo.net/map
 Using an animated counter adds visual and narrative impact to an otherwise
@@ -138,9 +138,9 @@ upgrade.
 
 
 
-==Usage==
+== Usage ==
 
-=Widget=
+= Widget =
 
 Simply drag a counter widget to your sidebar and adjust the settings to suit
 your needs.
@@ -193,10 +193,12 @@ total number of 0 characters as the number of digits.
 Example Formats:
 
 $0.00
+
 1,000,000
+
 0000 km
 
-=Shortcode=
+= Shortcode =
 
 You can generate a counter directly within page or post content using the
 [jellyfish_counter] shortcode. The shortcode accepts a full range of
@@ -225,6 +227,7 @@ If you don't specify a parameter it's default value will be used.
 Examples:
 
 [jellyfish_counter end=100]
+
 The above shortcode translates as:
 Display a counter that animates upwards from 0 to 100
 
