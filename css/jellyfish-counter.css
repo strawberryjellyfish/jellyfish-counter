@@ -1,5 +1,5 @@
 /* Counter container styles, you probably don't need to change these */
-.jellyfish-counter-widget {
+.jellyfish-counter {
   text-align: center;
   width: auto;
   overflow: hidden;
@@ -17,7 +17,7 @@
   margin: 0 auto;
   height: auto;
   width: auto;
-  text-align: left;
+  text-align: inherit;
 }
 
 /* 3d effect high/lowlights */

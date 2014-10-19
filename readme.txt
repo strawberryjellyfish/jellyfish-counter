@@ -6,7 +6,7 @@ Plugin URI: http://strawberryjellyfish.com/wordpress-plugins/jellyfish-counter/
 Tags: counter, odometer, milometer, animated, widget, totaliser
 Requires at least: 3.0
 Tested up to: 4.0
-Stable tag: 1.0
+Stable tag: 1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -218,7 +218,7 @@ The following parameters may be used within a shortcode:
 * end : a number, ending value for the counter
 * direction : a, string 'up' or 'down'
 * interval : The number of seconds between updates of a continuous counter
-* init_time : false or a string representing the starting time for the counter
+* timestamp : false or a string representing the starting time for the counter
 
 If you don't specify a parameter it's default value will be used.
 
@@ -230,7 +230,7 @@ Display a counter that animates upwards from 0 to 100
 
 [jellyfish_counter start=999 end=0 direction="down"
 digit_style="background: transparent; color: red;" flat=true;
-persist="2014-09-28 9:20:21" interval=300 ]
+timestamp="2014-09-28 9:20:21" interval=300 ]
 
 The above shortcode translates as:
 Display a counter that starts at 999 and ends at 0, counting downwards.
