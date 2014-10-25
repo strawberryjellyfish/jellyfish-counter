@@ -59,6 +59,7 @@ function jellyfish_cw_shortcode_handler( $atts, $content = null ) {
 			'digit_width' => 30,
 			'digit_padding' => 0,
 			'digit_style' => '',
+			'alignment' => 'center',
 			'bustedness' => 2,
 			'flat' => false,
 			'speed' => 80,
@@ -102,6 +103,7 @@ function jellyfish_cw_shortcode_handler( $atts, $content = null ) {
 			data-digit-width="' . esc_attr( $a['digit_width'] ) .'"
 			data-digit-padding="' . esc_attr( $a['digit_padding'] ) .'"
 			data-digit-style="' . esc_attr( $a['digit_style'] ) .'"
+			data-alignment="' . esc_attr( $a['alignment'] ) .'"
 			data-bustedness="' . esc_attr( $a['bustedness'] ) .'"
 			data-flat="' . esc_attr( $a['flat'] ) .'"
 			data-wait-time="' .  max( 0, ( 100 - esc_attr( $a['speed'] ) ) ) .'"
@@ -146,6 +148,7 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 		$digit_padding = ( is_numeric( $instance['digit_padding'] ) ? $instance['digit_padding'] : 0 );
 		$digit_bustedness = ( is_numeric( $instance['digit_bustedness'] ) ? $instance['digit_bustedness'] : 2 );
 
+		$alignment = ( !empty( $instance['alignment'] ) ? $instance['alignment'] : 'center' );
 		$digit_style = ( !empty( $instance['digit_style'] ) ? $instance['digit_style'] : 'font-family: Courier New, Courier, monospace; font-weight: 900;' );
 		$widget_title = ( !empty( $instance['widget_title'] ) ? $instance['widget_title'] : 'Counter' );
 		$before_text = $instance['before_text'];
@@ -327,6 +330,23 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 			</span>
 		</p>
 		<p>
+			<label for="<?php echo $this->get_field_id( 'alignment' ); ?>">
+				<?php _e( 'Counter Alignment:', 'jellyfish_cw' ); ?>
+				<select id="<?php echo $this->get_field_id( 'alignment' ); ?>"
+					name="<?php echo $this->get_field_name( 'alignment' ); ?>">
+					<option value="left"
+						<?php selected( $alignment, 'left' ); ?>>
+						<?php _e( 'Left', 'jellyfish_cw' ); ?></option>
+					<option value="center"
+						<?php selected( $alignment, 'center' ); ?>>
+						<?php _e( 'Center', 'jellyfish_cw' ); ?></option>
+					<option value="right"
+						<?php selected( $alignment, 'right' ); ?>>
+						<?php _e( 'Right', 'jellyfish_cw' ); ?></option>
+				</select>
+			</label>
+		</p>
+		<p>
 			<label for="<?php echo $this->get_field_id( 'digit_height' ); ?>">
 				<?php _e( 'Digit Height:', 'jellyfish_cw' ); ?>
 				<input type="text"
@@ -410,6 +430,7 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 		$instance['before_text'] = sanitize_text_field( $new_instance['before_text'] );
 		$instance['after_text'] = sanitize_text_field( $new_instance['after_text'] );
 		$instance['direction'] = sanitize_text_field( $new_instance['direction'] );
+		$instance['alignment'] = sanitize_text_field( $new_instance['alignment'] );
 		$instance['format'] = sanitize_text_field( $new_instance['format'] );
 
 		// boolean values
@@ -500,6 +521,7 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 		$digit_padding = $instance['digit_padding'];
 		$digit_bustedness = $instance['digit_bustedness'];
 		$digit_style = $instance['digit_style'];
+		$alignment = $instance['alignment'];
 		$widget_title = $instance['widget_title'];
 		$before_text = esc_attr( $instance['before_text'] );
 		$after_text = esc_attr( $instance['after_text'] );
@@ -551,6 +573,7 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 						data-digit-width="' . $digit_width .'"
 						data-digit-padding="' . $digit_padding .'"
 						data-digit-style="' . $digit_style .'"
+						data-alignment="' . $alignment .'"
 						data-bustedness="' . $digit_bustedness .'"
 						data-flat="' . $disable_depth .'"
 						data-wait-time="' . $wait_time .'"

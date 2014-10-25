@@ -38,6 +38,7 @@ function JellyfishOdometer(container) {
 	this.digitWidth = 30;
 	this.bustedness = 2;
 	this.digitStyle = '';
+	this.alignment = 'center';
 	this.currentValue = -1;
 	this.flat = false;
 
@@ -170,6 +171,19 @@ function JellyfishOdometer(container) {
 
 	// render the complete odometer into the dom
 	this.drawOdometer = function(container) {
+		switch(this.alignment) {
+    	case 'left':
+        container.className += ' jcw-left';
+        break;
+    	case 'right':
+        container.className += ' jcw-right';
+        break;
+    	case 'inline':
+        container.className += ' jcw-inline';
+        break;
+    	default:
+        container.className += ' jcw-center';
+		}
 		var odometerDiv = document.createElement("div");
 		odometerDiv.className = "jcw-odometer-div";
 		container.appendChild(odometerDiv);

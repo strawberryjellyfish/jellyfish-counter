@@ -72,6 +72,11 @@ configured just as much as their widget counterparts. See Usage for details.
 
 == Changelog ==
 
+=1.4=
+* New Counter alignment option for widgets and shortcodes, easily align a
+counter to left, center or right without touching style sheets. Additionally
+a shortcode counter can be rendered inline within a line of content.
+
 = 1.3 =
 * Shortcodes! You can now show counters directly in the post or page content
 using the [jellyfish_counter] shortcode.
@@ -213,6 +218,7 @@ The following parameters may be used within a shortcode:
 * digit_width : number, pixel width of digits
 * digit_padding : number, pixel padding for digits
 * digit_style : a string, custom css styles for the digits
+* alignment : 'left', 'center', 'right', 'inline' overall counter alignment
 * bustedness : a number, misalignment of digits
 * flat : true/false, don't show 3d effect, show 3d effect
 * speed : a number, 0 - 100, animation speed

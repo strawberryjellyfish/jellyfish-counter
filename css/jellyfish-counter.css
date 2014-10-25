@@ -1,9 +1,30 @@
 /* Counter container styles, you probably don't need to change these */
 .jellyfish-counter {
-  text-align: center;
   width: auto;
   overflow: hidden;
   vertical-align: top;
+}
+
+.jcw-left, .jcw-center, .jcw-right {
+  display: block;
+}
+
+.jcw-left {
+  text-align: left;
+}
+
+.jcw-right {
+  text-align: right;
+}
+
+.jcw-center {
+  text-align: center;
+}
+
+.jcw-inline {
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
 }
 
 .jcw-odometer-div, .jcw-digit-container {
