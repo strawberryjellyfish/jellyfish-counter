@@ -469,7 +469,7 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 		}
 
 		if ( is_numeric( $new_instance['persist_interval'] ) ) {
-			$instance['persist_interval'] = intval( $new_instance['persist_interval'] );
+			$instance['persist_interval'] = floatval( $new_instance['persist_interval'] );
 		}
 
 		if ( is_numeric( $new_instance['start_value'] ) && ( $new_instance['start_value'] != $instance['start_value'] ) ) {
