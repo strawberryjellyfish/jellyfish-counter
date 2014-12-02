@@ -6,7 +6,7 @@ Plugin URI: http://strawberryjellyfish.com/wordpress-plugins/jellyfish-counter/
 Tags: counter, odometer, milometer, animated, widget, totaliser
 Requires at least: 3.0
 Tested up to: 4.0
-Stable tag: 1.4
+Stable tag: 1.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -72,7 +72,11 @@ configured just as much as their widget counterparts. See Usage for details.
 
 == Changelog ==
 
-=1.4=
+= 1.4.1 =
+* Minor bugfix: Persistent Interval is no longer limited to an integer
+* Minor bugfix: Counter added via the theme customiser now display when added without saving their settings first.
+
+= 1.4 =
 * New Counter alignment option for widgets and shortcodes, easily align a
 counter to left, center or right without touching style sheets. Additionally
 a shortcode counter can be rendered inline within a line of content.

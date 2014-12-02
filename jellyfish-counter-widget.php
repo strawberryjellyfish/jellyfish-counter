@@ -493,9 +493,6 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 		// Extract members of args array as individual variables
 		extract( $args );
 
-		// these options were not in the first release so to play nice
-		// we'll add some defaults here to avoid any undefined indexes
-
 		$interval = ( isset( $instance['persist_interval'] ) ?
 			$instance['persist_interval'] : 1 );
 
@@ -507,25 +504,25 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 		$tenths = $disable_tenths == 'true' ? 'false' : 'true' ;
 		$disable_depth = isset( $instance['disable_depth'] ) ? 'true' : 'false';
 		$persist = isset( $instance['persist'] ) ? 'true' : 'false';
+		$direction = ( !empty( $instance['direction'] ) ? $instance['direction'] : 'up' );
 
-		$number_of_digits = $instance['number_of_digits'];
 		$format = $instance['format'];
-		$start_value = $instance['start_value'];
-		$end_value = $instance['end_value'];
+		$number_of_digits = ( is_numeric( $instance['number_of_digits'] ) ? $instance['number_of_digits'] : 5 );
+		$start_value = ( is_numeric( $instance['start_value'] ) ? $instance['start_value'] : 0 );
+		$end_value = ( is_numeric( $instance['end_value'] ) ? $instance['end_value'] : 100 );
 
 		$animate_speed = $instance['animate_speed'];
 		$wait_time = max( 0, ( 100 - $animate_speed ) );
 
-		$digit_height = $instance['digit_height'];
-		$digit_width = $instance['digit_width'];
-		$digit_padding = $instance['digit_padding'];
-		$digit_bustedness = $instance['digit_bustedness'];
-		$digit_style = $instance['digit_style'];
-		$alignment = $instance['alignment'];
-		$widget_title = $instance['widget_title'];
+		$digit_height = ( is_numeric( $instance['digit_height'] ) ? $instance['digit_height'] : 40 );
+		$digit_width = ( is_numeric( $instance['digit_width'] ) ? $instance['digit_width'] : 30 );
+		$digit_padding = ( is_numeric( $instance['digit_padding'] ) ? $instance['digit_padding'] : 0 );
+		$digit_bustedness = ( is_numeric( $instance['digit_bustedness'] ) ? $instance['digit_bustedness'] : 2 );
+		$alignment = ( !empty( $instance['alignment'] ) ? $instance['alignment'] : 'center' );
+		$digit_style = ( !empty( $instance['digit_style'] ) ? $instance['digit_style'] : 'font-family: Courier New, Courier, monospace; font-weight: 900;' );
+		$widget_title = ( !empty( $instance['widget_title'] ) ? $instance['widget_title'] : 'Counter' );
 		$before_text = esc_attr( $instance['before_text'] );
 		$after_text = esc_attr( $instance['after_text'] );
-		$direction = $instance['direction'];
 
 		if ( $persist == 'true' ) {
 			// calculate how may 'counts' have passed since initializing the counter
