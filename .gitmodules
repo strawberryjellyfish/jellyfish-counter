@@ -1,0 +1,3 @@
+[submodule "trunk/jellyfish-odometer-class"]
+	path = trunk/jellyfish-odometer-class
+	url = https://github.com/strawberryjellyfish/jellyfish-odometer-class.git
