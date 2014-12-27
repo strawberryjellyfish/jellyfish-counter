@@ -11,9 +11,9 @@ Live demo at http://strawberryjellyfish.com/wordpress-plugins/jellyfish-counter/
 
 If you want to actually use this on a WordPress site it will be
 easier to just install via the WordPress plugin admin pages.
-Just search for Jellyfish Invaders and install.
+Just search for "Jellyfish Counter Widget" and install.
 
-If you want to install manually, create a folder in called jellyfish-backdrop in your wp-plugins folder then copy the contents of trunk into it. Then go to the plugins page on your WordPress admin and activate.
+If you want to install manually, create a folder in called jellyfish-counter-widget in your wp-plugins folder then copy the contents of trunk into it. Then go to the plugins page on your WordPress admin and activate.
 
 ## Further info
 
