@@ -4,7 +4,7 @@
 	Plugin URI: http://strawberryjellyfish.com/wordpress-plugins/jellyfish-counter/
 	Description: Fully configurable static or animated odometer style rotating counters.
 	Author: Rob Miller
-	Version: 1.4
+	Version: 1.4.2
 	Author URI: http://strawberryjellyfish.com/
 */
 
@@ -67,7 +67,8 @@ function jellyfish_cw_shortcode_handler( $atts, $content = null ) {
 			'end' => 0,
 			'direction' => 'up',
 			'timestamp' => false,
-			'interval' => 1
+			'interval' => 1,
+			'active' => true
 		), $atts );
 
 	$element_id = 'jellyfish-counter-shortcode-' . esc_attr( $a['id'] );
@@ -111,6 +112,7 @@ function jellyfish_cw_shortcode_handler( $atts, $content = null ) {
 			data-end-value="' . esc_attr( $a['end'] ) .'"
 			data-direction="' . esc_attr( $a['direction'] ) .'"
 			data-timestamp="' . esc_attr( $a['timestamp'] ) .'"
+			data-active="' . esc_attr( $a['active'] ) .'"
 			data-interval="' . esc_attr( $a['interval'] ) .'">
 		</div>';
 	$jellyfish_cw_shortcode_id++;
@@ -461,7 +463,7 @@ class Jellyfish_Counter_Widget extends WP_Widget {
 		}
 
 		if ( is_numeric( $new_instance['end_value'] ) ) {
-			$instance['end_value'] = intval( $new_instance['end_value'] );
+			$instance['end_value'] = $new_instance['end_value'];
 		}
 
 		if ( is_numeric( $new_instance['animate_speed'] ) ) {
