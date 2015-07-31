@@ -5,8 +5,8 @@ Donate link: http://strawberryjellyfish.com/donate/
 Plugin URI: http://strawberryjellyfish.com/wordpress-plugins/jellyfish-counter/
 Tags: counter, odometer, milometer, animated, widget, totaliser
 Requires at least: 3.0
-Tested up to: 4.1
-Stable tag: 1.4.2
+Tested up to: 4.2.3
+Stable tag: 1.4.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -19,15 +19,17 @@ The Jellyfish Counter plugin provides a widget and shortcode enabling you to
 easily add animated counters to your WordPress site.
 
 Counters can be used as a manually updated total, an automatic counter that
-updates over time or just as an animated visual effect. Each counter can count upwards or downwards making them suitable for both incrementing totals or countdown situations. A great visual effect for travel blogs or any website
-that wants to display a running total or countdown of anything.
+updates over time or just as an animated visual effect. 
+Each counter can count upwards or downwards making them suitable for both 
+incrementing totals or countdown situations. A great visual effect for travel 
+blogs or any website that wants to display a running total or countdown of anything.
 
 Jellyfish Counters are highly configurable through the widget interface, and
 being generated using CSS and JavaScript, they require no external graphics
 files. You may have as many counters as you wish on a page, all can have
 individual settings for totals and appearance.
 
-New Shortcode support allows you to generate a counter directly within any
+Shortcode support allows you to generate a counter directly within any
 post or page content making counters no longer limited to your sidebar or
 other widgetable area.
 
@@ -38,11 +40,7 @@ own custom scripting.
 
 = Demo =
 
-Here's a typical counter in action at http://sharkaroo.net/map
-Using an animated counter adds visual and narrative impact to an otherwise
-static value.
-
-Check out the plugin homepage for more demos and further information:
+Check out the plugin homepage for demos and further information:
 http://strawberryjellyfish.com/wordpress-plugins/jellyfish-counter/
 
 
@@ -52,7 +50,8 @@ Either install and activate the plugin via your WordPress Admin
 
 Or
 
-Extract the zip file and just drop the contents in the wp-content/plugins/ directory of your WordPress installation and then activate the Plugin from
+Extract the zip file and just drop the contents in the wp-content/plugins/ 
+directory of your WordPress installation and then activate the Plugin from
 Plugins page.
 
 After activation you'll find a new Counter widget in the widgets panel of
@@ -66,15 +65,42 @@ configured just as much as their widget counterparts. See Usage for details.
 
 == Frequently Asked Questions ==
 
+= How can I make the counter adapt on responsive layouts? =
+
+The current version of the counter does not scale easily, try to make your 
+counter small enough to fit your smallest view. The all new future version 2.0
+will be more responsive design friendly.
+
+= Can I use the counter to track visitors to my website? =
+
+No, it's not that kind of a counter.
+
+= Can I use the counter to show my post count/comment count/user count? =
+
+Not yet, possibly down the track in version 2.0+ .
+
+= I've a really cool idea for a feature, can you include it? =
+
+I'm always interested in suggestions, send them on through!
+
 
 == Screenshots ==
 
 
 == Changelog ==
 
+= 1.4.4 =
+* Ooops: one of the obsolete things removed in previous version wasn't as obsolete I imagined.
+
+= 1.4.3 =
+* Updated WordPress tested version to 4.2.3
+* Cleanup: removed obsolete js and css files.
+* Minor Bugfix: fixed initialisation of current value.
+* New Feature: tick_multiplier parameter added to shortcode, see shortcode usage for details.
+
 = 1.4.2 =
 * Updated WordPress tested version to 4.1
-* Minor bugfix: End Value is no longer limited to an integer
+* Minor bugfix: End value is no longer limited to an integer or required.
 
 = 1.4.1 =
 * Minor bugfix: Persistent Interval is no longer limited to an integer
@@ -142,7 +168,7 @@ to your counters.
 
 Note:
 
-There have been changes in class names after vesrion 1.0, if you have added
+There have been changes in class names after version 1.0, if you have added
 custom counter styles to your WordPress theme you may need to make minor
 changes to reflect the new CSS classes applied to counter elements.
 
@@ -234,6 +260,7 @@ The following parameters may be used within a shortcode:
 * end : a number, ending value for the counter
 * direction : a, string 'up' or 'down'
 * interval : The number of seconds between updates of a continuous counter
+* tick_multiplier : the number of units the counter will increment every interval (defaults to 1) 
 * timestamp : false or a string representing the starting time for the counter
 
 If you don't specify a parameter it's default value will be used.
