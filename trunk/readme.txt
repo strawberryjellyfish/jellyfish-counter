@@ -5,7 +5,7 @@ Donate link: http://strawberryjellyfish.com/donate/
 Plugin URI: http://strawberryjellyfish.com/wordpress-plugins/jellyfish-counter/
 Tags: counter, odometer, milometer, animated, widget, totaliser
 Requires at least: 3.0
-Tested up to: 4.2.3
+Tested up to: 5.4
 Stable tag: 1.4.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
